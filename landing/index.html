@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THStyle — Fashion at High Speed</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e91e63'/%3E%3Ctext x='16' y='23' font-family='Arial' font-weight='900' font-size='18' fill='white' text-anchor='middle'%3ETH%3C/text%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:#08080a;color:#fff;overflow-x:hidden;line-height:1.6}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#08080a}
+::-webkit-scrollbar-thumb{background:rgba(233,30,99,0.3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(233,30,99,0.5)}
+
+/* ─── Nav ─── */
+nav{position:fixed;top:0;left:0;right:0;padding:16px 48px;display:flex;align-items:center;justify-content:space-between;z-index:1000;transition:all 0.4s ease}
+nav.scrolled{background:rgba(8,8,10,0.85);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,0.04)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo svg{flex-shrink:0}
+.logo-text{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:#fff}
+.logo-text span{background:linear-gradient(135deg,#e91e63,#9c27b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-links a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:linear-gradient(135deg,#e91e63,#9c27b0);transition:width 0.3s;border-radius:2px}
+.nav-links a:hover{color:#fff}
+.nav-links a:hover::after{width:100%}
+.nav-cta{background:linear-gradient(135deg,#e91e63,#9c27b0);color:#fff;border:none;padding:10px 24px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(233,30,99,0.35)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hamburger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:0.3s}
+
+/* ─── Hero ─── */
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 48px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#08080a 0%,#12080e 30%,#080812 60%,#08080a 100%)}
+.hero-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 700px 500px at 15% 45%,rgba(233,30,99,0.08) 0%,transparent 70%),radial-gradient(ellipse 600px 600px at 85% 30%,rgba(156,39,176,0.06) 0%,transparent 70%),radial-gradient(ellipse 400px 400px at 50% 80%,rgba(29,107,240,0.04) 0%,transparent 70%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 800px 600px at 50% 50%,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse 800px 600px at 50% 50%,black 30%,transparent 70%)}
+.hero-content{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1280px;width:100%;margin:0 auto}
+.hero-left{opacity:0;transform:translateY(30px);animation:fadeUp 0.8s ease forwards}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(233,30,99,0.12);border:1px solid rgba(233,30,99,0.2);padding:6px 16px;border-radius:100px;font-size:12px;font-weight:600;color:#e91e63;margin-bottom:24px}
+.hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:#e91e63;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-size:64px;font-weight:900;line-height:1.06;letter-spacing:-2.5px;margin-bottom:20px}
+.hero h1 .gradient-text{background:linear-gradient(135deg,#e91e63,#9c27b0,#5c6bc0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:18px;color:rgba(255,255,255,0.5);line-height:1.8;max-width:500px;margin-bottom:36px}
+.hero-buttons{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e91e63,#9c27b0);color:#fff;border:none;padding:16px 32px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;transition:all 0.3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(233,30,99,0.3)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#fff;padding:16px 32px;border-radius:14px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;transition:all 0.3s}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15)}
+.hero-right{opacity:0;transform:translateY(30px);animation:fadeUp 0.8s ease 0.2s forwards;display:flex;justify-content:center;position:relative}
+.phone-wrapper{position:relative}
+.phone-mockup{width:290px;height:590px;background:#0d0d1a;border-radius:44px;border:3px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;box-shadow:0 50px 100px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.05)}
+.phone-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:24px;background:#000;border-radius:0 0 16px 16px;z-index:5}
+.phone-notch::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#1a1a2e;top:6px;left:50%;transform:translateX(-50%)}
+.phone-screen{padding:44px 16px 16px;display:flex;flex-direction:column;gap:10px;height:100%}
+.phone-header{display:flex;justify-content:space-between;align-items:center;padding:0 4px}
+.phone-header .hi{font-size:15px;font-weight:700;color:#fff}
+.phone-header .hi small{font-weight:400;color:rgba(255,255,255,0.35);font-size:11px}
+.phone-header .icons{display:flex;gap:6px}
+.phone-header .icons div{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:11px}
+.phone-banner{height:80px;border-radius:16px;background:linear-gradient(135deg,#e91e63,#9c27b0);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:6px;position:relative;overflow:hidden}
+.phone-banner::before{content:'';position:absolute;inset:0;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,0.06) 50%,transparent 60%)}
+.phone-banner .big{font-size:13px;font-weight:800;color:#fff;position:relative;z-index:1}
+.phone-banner .small{font-size:9px;font-weight:500;color:rgba(255,255,255,0.7);position:relative;z-index:1;margin-top:2px}
+.phone-categories{display:flex;gap:6px;margin-top:6px}
+.phone-categories div{flex:1;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:rgba(255,255,255,0.35);transition:all 0.2s}
+.phone-categories div.active{background:rgba(233,30,99,0.15);color:#e91e63}
+.phone-product{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.03);transition:all 0.2s}
+.phone-product .thumb{width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,rgba(233,30,99,0.15),rgba(156,39,176,0.1))}
+.phone-product .info{flex:1;min-width:0}
+.phone-product .info .title{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phone-product .info .sub{font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px}
+.phone-product .price{font-size:12px;font-weight:700;color:#e91e63}
+.phone-bottom-nav{position:absolute;bottom:0;left:0;right:0;height:52px;background:rgba(8,8,10,0.6);backdrop-filter:blur(16px);display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(255,255,255,0.04)}
+.phone-bottom-nav div{width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,0.06);transition:all 0.2s}
+.phone-bottom-nav div.active{background:rgba(233,30,99,0.5);box-shadow:0 0 12px rgba(233,30,99,0.2)}
+
+.floating-card{position:absolute;width:180px;padding:16px;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;right:-70px;top:80px;box-shadow:0 20px 48px rgba(0,0,0,0.4);animation:float 4s ease-in-out infinite}
+.floating-card-2{position:absolute;width:150px;padding:14px;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;left:-50px;bottom:100px;box-shadow:0 20px 48px rgba(0,0,0,0.4);animation:float 4s ease-in-out infinite 2s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.floating-card .row,.floating-card-2 .row{display:flex;align-items:center;gap:10px}
+.floating-card .dot{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#e91e63,#9c27b0);flex-shrink:0}
+.floating-card .info{flex:1}
+.floating-card .info .name{font-size:12px;font-weight:600;color:#fff}
+.floating-card .info .action{font-size:9px;color:rgba(255,255,255,0.3)}
+.floating-card .badge{margin-top:10px;padding:5px 0;border-radius:8px;background:rgba(76,175,80,0.15);font-size:9px;font-weight:700;color:#4caf50;display:flex;align-items:center;justify-content:center;gap:4px;letter-spacing:0.3px}
+.floating-card-2 .dot{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1d6bf0,#5c6bc0);flex-shrink:0}
+.floating-card-2 .info{flex:1}
+.floating-card-2 .info .name{font-size:11px;font-weight:600;color:#fff}
+.floating-card-2 .info .action{font-size:8px;color:rgba(255,255,255,0.3)}
+.floating-card-2 .rating{margin-top:8px;display:flex;gap:3px}
+.floating-card-2 .rating span{color:#ffc107;font-size:10px}
+.floating-card-2 .rating .text{color:rgba(255,255,255,0.3);font-size:8px;margin-left:2px}
+
+/* ─── Brand Strip ─── */
+.brand-strip{padding:40px 48px;text-align:center;position:relative}
+.brand-strip p{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:24px}
+.brand-logos{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;align-items:center;opacity:0.15}
+.brand-logos div{font-size:14px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:1px}
+
+/* ─── How It Works ─── */
+.how{text-align:center;padding:120px 48px;position:relative}
+.how h2{font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-bottom:16px}
+.how h2 span{background:linear-gradient(135deg,#e91e63,#9c27b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.how .sub{font-size:16px;color:rgba(255,255,255,0.45);max-width:500px;margin:0 auto 60px}
+.steps{display:flex;justify-content:center;gap:40px;max-width:900px;margin:0 auto}
+.step{flex:1;padding:36px 28px;border-radius:24px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);transition:all 0.4s;position:relative;opacity:0;transform:translateY(20px)}
+.step.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease,background 0.3s,border-color 0.3s}
+.step:hover{background:rgba(255,255,255,0.05);border-color:rgba(233,30,99,0.1);transform:translateY(-4px)}
+.step .number{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;margin:0 auto 16px}
+.step h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.step p{font-size:14px;color:rgba(255,255,255,0.45);line-height:1.7}
+.step-connector{display:flex;align-items:center;justify-content:center;position:relative}
+.step-connector::before{content:'';width:40px;height:2px;background:linear-gradient(90deg,#e91e63,transparent);position:absolute;top:50%}
+
+/* ─── Features ─── */
+.features{padding:120px 48px;position:relative}
+.features-bg{position:absolute;inset:0;background:radial-gradient(ellipse 600px 400px at 50% 30%,rgba(233,30,99,0.03),transparent);pointer-events:none}
+.features-header{text-align:center;margin-bottom:60px}
+.section-label{font-size:12px;font-weight:700;letter-spacing:2px;color:#e91e63;text-transform:uppercase;margin-bottom:12px}
+.features-header h2{font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-bottom:16px}
+.features-header .sub{font-size:16px;color:rgba(255,255,255,0.45);max-width:520px;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1280px;margin:0 auto}
+.feature-card{padding:28px 24px;border-radius:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);transition:all 0.4s;opacity:0;transform:translateY(20px)}
+.feature-card.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease,background 0.3s,border-color 0.3s}
+.feature-card:hover{background:rgba(255,255,255,0.05);border-color:rgba(233,30,99,0.12);transform:translateY(-4px)}
+.feature-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;transition:transform 0.3s}
+.feature-card:hover .feature-icon{transform:scale(1.1)}
+.feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.feature-card p{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7}
+
+/* ─── App Showcase ─── */
+.showcase{padding:120px 48px;text-align:center}
+.showcase h2{font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-bottom:60px}
+.showcase-grid{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+.showcase-item{width:200px;padding:20px;border-radius:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);transition:all 0.3s;opacity:0;transform:translateY(20px)}
+.showcase-item.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease}
+.showcase-item:hover{background:rgba(255,255,255,0.04);border-color:rgba(233,30,99,0.1)}
+.showcase-item .icon{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px}
+.showcase-item h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.showcase-item p{font-size:12px;color:rgba(255,255,255,0.4)}
+
+/* ─── Store Section ─── */
+.store-section{padding:120px 48px;background:linear-gradient(135deg,rgba(233,30,99,0.02) 0%,transparent 50%)}
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1280px;margin:0 auto}
+.store-left{opacity:0;transform:translateX(-20px)}
+.store-left.visible{opacity:1;transform:translateX(0);transition:opacity 0.6s ease,transform 0.6s ease}
+.store-section h2{font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-bottom:16px}
+.store-section .sub{font-size:16px;color:rgba(255,255,255,0.45);line-height:1.8;margin-bottom:32px;max-width:480px}
+.store-features{display:flex;flex-direction:column;gap:12px}
+.store-feature{display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);transition:all 0.3s}
+.store-feature:hover{background:rgba(255,255,255,0.04);border-color:rgba(233,30,99,0.1)}
+.store-feature .icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.store-feature .info h4{font-size:14px;font-weight:700;margin-bottom:2px}
+.store-feature .info p{font-size:12px;color:rgba(255,255,255,0.4)}
+.store-mockup{background:rgba(255,255,255,0.02);border-radius:24px;border:1px solid rgba(255,255,255,0.05);padding:24px;display:flex;flex-direction:column;gap:16px;opacity:0;transform:translateX(20px)}
+.store-mockup.visible{opacity:1;transform:translateX(0);transition:opacity 0.6s ease,transform 0.6s ease}
+.store-mockup .bar{display:flex;justify-content:space-between;align-items:center}
+.store-mockup .bar .title{font-size:14px;font-weight:700}
+.store-mockup .bar .stats{display:flex;gap:16px}
+.store-mockup .bar .stats div{font-size:11px;color:rgba(255,255,255,0.4)}
+.store-mockup .bar .stats div strong{color:#fff;font-size:13px}
+.store-mockup .chart{flex:1;border-radius:16px;background:rgba(255,255,255,0.02);display:flex;align-items:flex-end;gap:6px;padding:16px;height:120px}
+.store-mockup .chart div{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(233,30,99,0.4),rgba(156,39,176,0.15));transition:height 0.6s}
+.store-mockup .orders{display:flex;flex-direction:column;gap:8px}
+.store-mockup .order-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+.store-mockup .order-row .name{font-size:12px;font-weight:600}
+.store-mockup .order-row .status{font-size:9px;font-weight:700;padding:3px 10px;border-radius:100px}
+.store-mockup .order-row .status.processing{background:rgba(233,30,99,0.12);color:#e91e63}
+.store-mockup .order-row .status.delivered{background:rgba(76,175,80,0.12);color:#4caf50}
+.store-mockup .order-row .status.cancelled{background:rgba(255,152,0,0.12);color:#ff9800}
+
+/* ─── Testimonials ─── */
+.testimonials{padding:120px 48px;text-align:center}
+.testimonials h2{font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-bottom:60px}
+.testimonials-grid{display:flex;gap:24px;max-width:1100px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.testimonial-card{flex:1;min-width:280px;max-width:350px;padding:32px;border-radius:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);text-align:left;transition:all 0.3s;opacity:0;transform:translateY(20px)}
+.testimonial-card.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease}
+.testimonial-card:hover{background:rgba(255,255,255,0.04);border-color:rgba(233,30,99,0.1)}
+.testimonial-card .stars{color:#ffc107;font-size:14px;margin-bottom:12px}
+.testimonial-card .text{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8;margin-bottom:16px}
+.testimonial-card .author{display:flex;align-items:center;gap:12px}
+.testimonial-card .author .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#e91e63,#9c27b0);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff}
+.testimonial-card .author .info .name{font-size:13px;font-weight:700}
+.testimonial-card .author .info .role{font-size:11px;color:rgba(255,255,255,0.35)}
+
+/* ─── Stats ─── */
+.stats{padding:100px 48px;text-align:center;position:relative}
+.stats::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,#e91e63,transparent)}
+.stats-grid{display:flex;justify-content:center;gap:80px;max-width:900px;margin:0 auto;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-item h3{font-size:48px;font-weight:900;letter-spacing:-1px;margin-bottom:4px}
+.stat-item p{font-size:13px;color:rgba(255,255,255,0.4);font-weight:500}
+
+/* ─── FAQ ─── */
+.faq{padding:120px 48px;max-width:800px;margin:0 auto}
+.faq h2{text-align:center;font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-bottom:16px}
+.faq .sub{text-align:center;font-size:16px;color:rgba(255,255,255,0.45);margin-bottom:48px}
+.faq-item{border-radius:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);margin-bottom:12px;overflow:hidden;transition:all 0.3s;opacity:0;transform:translateY(10px)}
+.faq-item.visible{opacity:1;transform:translateY(0);transition:opacity 0.5s ease,transform 0.5s ease}
+.faq-item:hover{border-color:rgba(233,30,99,0.08)}
+.faq-question{width:100%;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:none;border:none;color:#fff;font-size:15px;font-weight:600;text-align:left;gap:16px}
+.faq-question .icon{width:24px;height:24px;border-radius:8px;background:rgba(233,30,99,0.1);display:flex;align-items:center;justify-content:center;font-size:12px;color:#e91e63;flex-shrink:0;transition:transform 0.3s}
+.faq-item.open .faq-question .icon{transform:rotate(180deg)}
+.faq-answer{padding:0 24px 20px;font-size:14px;color:rgba(255,255,255,0.5);line-height:1.8;display:none}
+.faq-item.open .faq-answer{display:block}
+
+/* ─── CTA ─── */
+.cta{padding:120px 48px;text-align:center;position:relative}
+.cta-box{max-width:800px;margin:0 auto;padding:64px;border-radius:32px;background:linear-gradient(135deg,rgba(233,30,99,0.06),rgba(156,39,176,0.03));border:1px solid rgba(233,30,99,0.12);position:relative;overflow:hidden}
+.cta-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 50%,rgba(233,30,99,0.06),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(156,39,176,0.04),transparent 60%);pointer-events:none}
+.cta h2{font-size:38px;font-weight:900;letter-spacing:-1px;margin-bottom:16px;position:relative;z-index:1}
+.cta p{font-size:16px;color:rgba(255,255,255,0.45);margin-bottom:32px;position:relative;z-index:1}
+.cta-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;position:relative;z-index:1}
+.download-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:14px;text-decoration:none;font-weight:700;font-size:14px;transition:all 0.3s}
+.download-btn.android{background:#fff;color:#08080a}
+.download-btn.android:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,255,255,0.1)}
+.download-btn.ios{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff}
+.download-btn.ios:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);transform:translateY(-2px)}
+
+/* ─── Footer ─── */
+footer{background:rgba(255,255,255,0.015);border-top:1px solid rgba(255,255,255,0.04);padding:48px 48px 24px}
+.footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px}
+.footer-brand .logo{margin-bottom:12px}
+.footer-brand p{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.8;max-width:300px}
+.footer-col h4{font-size:13px;font-weight:700;margin-bottom:16px;color:#fff}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,0.35);text-decoration:none;margin-bottom:10px;transition:color 0.2s}
+.footer-col a:hover{color:#e91e63}
+.footer-bottom{max-width:1280px;margin:0 auto;padding-top:24px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-bottom p{font-size:13px;color:rgba(255,255,255,0.25)}
+.footer-social{display:flex;gap:12px}
+.footer-social a{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.35);text-decoration:none;font-size:14px;transition:all 0.3s}
+.footer-social a:hover{background:rgba(233,30,99,0.1);color:#e91e63;transform:translateY(-2px)}
+
+/* ─── Animations ─── */
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* ─── Mobile Nav ─── */
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,8,10,0.98);backdrop-filter:blur(32px);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:32px;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:20px;font-weight:600;transition:color 0.2s}
+.mobile-menu a:hover{color:#fff}
+.mobile-menu .close-btn{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer}
+
+/* ─── Responsive ─── */
+@media(max-width:1100px){
+  .features-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:900px){
+  nav{padding:14px 20px}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero{padding:100px 20px 60px}
+  .hero-content{grid-template-columns:1fr;gap:48px;text-align:center}
+  .hero h1{font-size:40px;letter-spacing:-1.5px}
+  .hero p{margin:0 auto 36px}
+  .hero-buttons{justify-content:center}
+  .phone-wrapper{transform:scale(0.85)}
+  .floating-card,.floating-card-2{display:none}
+  .features-grid{grid-template-columns:repeat(2,1fr);gap:16px}
+  .features{padding:80px 20px}
+  .features-header h2{font-size:28px}
+  .how{padding:80px 20px}
+  .how h2{font-size:28px}
+  .steps{flex-direction:column;gap:16px;padding:0 20px}
+  .step{display:flex;align-items:center;gap:16px;padding:20px;text-align:left}
+  .step .number{margin:0;flex-shrink:0}
+  .store-section{padding:80px 20px}
+  .store-grid{grid-template-columns:1fr;gap:40px}
+  .store-mockup{height:auto}
+  .stats-grid{gap:40px}
+  .stat-item h3{font-size:36px}
+  .testimonials{padding:80px 20px}
+  .testimonials h2{font-size:28px}
+  .testimonial-card{min-width:100%}
+  .showcase{padding:80px 20px}
+  .showcase h2{font-size:28px}
+  .faq{padding:80px 20px}
+  .faq h2{font-size:28px}
+  .cta{padding:80px 20px}
+  .cta-box{padding:40px 24px}
+  .cta h2{font-size:28px}
+  footer{padding:40px 20px 24px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .footer-bottom{flex-direction:column;text-align:center}
+}
+@media(max-width:500px){
+  .features-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .hero h1{font-size:32px}
+  .phone-wrapper{transform:scale(0.7)}
+  .stats-grid{gap:24px}
+  .stat-item h3{font-size:28px}
+  .brand-logos{gap:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- Fullscreen Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" onclick="closeMobileMenu()">&times;</button>
+  <a href="#features" onclick="closeMobileMenu()">Features</a>
+  <a href="#how" onclick="closeMobileMenu()">How It Works</a>
+  <a href="#store" onclick="closeMobileMenu()">For Stores</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">Reviews</a>
+  <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  <a href="#cta" onclick="closeMobileMenu()" style="background:linear-gradient(135deg,#e91e63,#9c27b0);color:#fff;padding:14px 36px;border-radius:100px">Download App</a>
+</div>
+
+<!-- Nav -->
+<nav id="nav">
+  <a href="#" class="logo">
+    <img src="logo.png" alt="THStyle" style="width:38px;height:38px;border-radius:10px;object-fit:cover" />
+    <span class="logo-text"><span>THStyle</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#store">For Stores</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#faq">FAQ</a>
+    <a href="#cta" class="nav-cta">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu" onclick="openMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="pulse"></span> Fashion at High Speed</div>
+      <h1>Your Style,<br /><span class="gradient-text">Your Statement.</span></h1>
+      <p>Discover the latest trends in fashion, beauty, and lifestyle. Shop from top brands near you with lightning-fast delivery. THStyle brings style to your doorstep in minutes.</p>
+      <div class="hero-buttons">
+        <a href="#cta" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Now
+        </a>
+        <a href="#features" class="btn-secondary">Explore Features</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="phone-wrapper">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-header">
+              <div class="hi">Hello, Tanya <small>Gold Member</small></div>
+              <div class="icons"><div>&#x2764;</div><div>&#x1F514;</div></div>
+            </div>
+            <div class="phone-banner">
+              <div class="big">&#127881; Flat 30% OFF</div>
+              <div class="small">on your first order &bull; Use code THSTYLE30</div>
+            </div>
+            <div class="phone-categories">
+              <div class="active">Fashion</div><div>Beauty</div><div>Electronics</div><div>Sports</div>
+            </div>
+            <div class="phone-product">
+              <div class="thumb"></div>
+              <div class="info">
+                <div class="title">Printed Cotton Dress</div>
+                <div class="sub">Zara &bull; 4.8 &#9733;</div>
+              </div>
+              <div class="price">&#8377;899</div>
+            </div>
+            <div class="phone-product">
+              <div class="thumb"></div>
+              <div class="info">
+                <div class="title">Leather Sneakers</div>
+                <div class="sub">Nike &bull; 4.9 &#9733;</div>
+              </div>
+              <div class="price">&#8377;1,299</div>
+            </div>
+            <div class="phone-product">
+              <div class="thumb"></div>
+              <div class="info">
+                <div class="title">Denim Jacket</div>
+                <div class="sub">H&M &bull; 4.7 &#9733;</div>
+              </div>
+              <div class="price">&#8377;2,499</div>
+            </div>
+          </div>
+          <div class="phone-bottom-nav">
+            <div class="active"></div><div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+        <div class="floating-card">
+          <div class="row">
+            <div class="dot"></div>
+            <div class="info">
+              <div class="name">Nike Air Max</div>
+              <div class="action">Order placed</div>
+            </div>
+          </div>
+          <div class="badge">&#10003; Delivered in 12 min</div>
+        </div>
+        <div class="floating-card-2">
+          <div class="row">
+            <div class="dot"></div>
+            <div class="info">
+              <div class="name">Your Rating</div>
+              <div class="action">Rate your experience</div>
+            </div>
+          </div>
+          <div class="rating">
+            <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span>
+            <span class="text">4.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brand Strip -->
+<section class="brand-strip">
+  <p>Trusted by customers &amp; stores nationwide</p>
+  <div class="brand-logos">
+    <div>ZARA</div>
+    <div>H&amp;M</div>
+    <div>NIKE</div>
+    <div>PUMA</div>
+    <div>ADIDAS</div>
+    <div>LEVIS</div>
+    <div>TOMMY</div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how" id="how">
+  <h2>How It <span>Works</span></h2>
+  <p class="sub">Three simple steps to get your favorite fashion at your doorstep.</p>
+  <div class="steps">
+    <div class="step" style="transition-delay:0s">
+      <div class="number" style="background:rgba(233,30,99,0.12);color:#e91e63">1</div>
+      <div>
+        <h3>Browse &amp; Discover</h3>
+        <p>Explore curated collections, search by style, or browse categories. Find exactly what you need.</p>
+      </div>
+    </div>
+    <div class="step" style="transition-delay:0.1s">
+      <div class="number" style="background:rgba(156,39,176,0.12);color:#9c27b0">2</div>
+      <div>
+        <h3>Order &amp; Pay</h3>
+        <p>Add to cart, choose your address, and pay securely via UPI, Card, COD, or Razorpay.</p>
+      </div>
+    </div>
+    <div class="step" style="transition-delay:0.2s">
+      <div class="number" style="background:rgba(29,107,240,0.12);color:#1d6bf0">3</div>
+      <div>
+        <h3>Track &amp; Receive</h3>
+        <p>Track your order in real-time. Get notified when it's out for delivery and receive it in minutes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="features-bg"></div>
+  <div class="features-header">
+    <div class="section-label">Features</div>
+    <h2>Packed with powerful features</h2>
+    <p class="sub">Everything you need for a seamless shopping and selling experience.</p>
+  </div>
+  <div class="features-grid" id="featuresGrid">
+    <div class="feature-card" style="transition-delay:0s">
+      <div class="feature-icon" style="background:rgba(233,30,99,0.1);color:#e91e63">&#9889;</div>
+      <h3>Lightning Delivery</h3>
+      <p>Get orders in 10-15 minutes. Our hyperlocal network of partner stores ensures speed without compromise.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.05s">
+      <div class="feature-icon" style="background:rgba(156,39,176,0.1);color:#9c27b0">&#9733;</div>
+      <h3>Curated Collections</h3>
+      <p>Trending fashion, beauty essentials, and lifestyle products curated just for your taste and style.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.1s">
+      <div class="feature-icon" style="background:rgba(29,107,240,0.1);color:#1d6bf0">&#128274;</div>
+      <h3>Secure Payments</h3>
+      <p>Pay via Razorpay, UPI, Credit/Debit Card, or Cash on Delivery. Your transactions are always protected.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.15s">
+      <div class="feature-icon" style="background:rgba(76,175,80,0.1);color:#4caf50">&#128230;</div>
+      <h3>Real-Time Tracking</h3>
+      <p>Track every order from shop to doorstep with live GPS tracking and push notification updates.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.2s">
+      <div class="feature-icon" style="background:rgba(233,30,99,0.1);color:#e91e63">&#128176;</div>
+      <h3>BHAV Bargaining</h3>
+      <p>Found a better price? Use our unique BHAV system to negotiate directly with sellers and get the best deal.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.25s">
+      <div class="feature-icon" style="background:rgba(156,39,176,0.1);color:#9c27b0">&#128722;</div>
+      <h3>Smart Search</h3>
+      <p>Search by product, brand, category, or even upload a photo. Our smart engine finds exactly what you want.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.3s">
+      <div class="feature-icon" style="background:rgba(255,152,0,0.1);color:#ff9800">&#128147;</div>
+      <h3>Wishlist &amp; Favorites</h3>
+      <p>Save your favorite items, get price drop alerts, and never miss out on limited-time deals.</p>
+    </div>
+    <div class="feature-card" style="transition-delay:0.35s">
+      <div class="feature-icon" style="background:rgba(76,175,80,0.1);color:#4caf50">&#128100;</div>
+      <h3>Google Sign-In</h3>
+      <p>One-tap login with your Google account. No passwords to remember &mdash; just fast, secure access.</p>
+    </div>
+  </div>
+</section>
+
+<!-- App Showcase -->
+<section class="showcase">
+  <h2>What's <span style="background:linear-gradient(135deg,#e91e63,#9c27b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Inside</span> the App</h2>
+  <div class="showcase-grid" id="showcaseGrid">
+    <div class="showcase-item" style="transition-delay:0s">
+      <div class="icon" style="background:rgba(233,30,99,0.1);color:#e91e63">&#128716;</div>
+      <h4>Onboarding</h4>
+      <p>Personalized gender-based experience with curated product feeds</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.05s">
+      <div class="icon" style="background:rgba(156,39,176,0.1);color:#9c27b0">&#128722;</div>
+      <h4>Product Catalog</h4>
+      <p>Browse by category, with size/color variants and stock availability</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.1s">
+      <div class="icon" style="background:rgba(29,107,240,0.1);color:#1d6bf0">&#128270;</div>
+      <h4>Smart Search</h4>
+      <p>Search across products, brands, categories with instant results</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.15s">
+      <div class="icon" style="background:rgba(76,175,80,0.1);color:#4caf50">&#128722;</div>
+      <h4>Cart &amp; Checkout</h4>
+      <p>Add to cart, manage quantities, and checkout with multiple payment options</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.2s">
+      <div class="icon" style="background:rgba(255,152,0,0.1);color:#ff9800">&#128230;</div>
+      <h4>Order Tracking</h4>
+      <p>Real-time GPS tracking with live status updates and notifications</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.25s">
+      <div class="icon" style="background:rgba(233,30,99,0.1);color:#e91e63">&#128100;</div>
+      <h4>Profile &amp; History</h4>
+      <p>View your complete order history, manage addresses, and update profile</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.3s">
+      <div class="icon" style="background:rgba(156,39,176,0.1);color:#9c27b0">&#128176;</div>
+      <h4>BHAV System</h4>
+      <p>Negotiate prices directly with store owners through our unique bargaining feature</p>
+    </div>
+    <div class="showcase-item" style="transition-delay:0.35s">
+      <div class="icon" style="background:rgba(29,107,240,0.1);color:#1d6bf0">&#128147;</div>
+      <h4>Wishlist</h4>
+      <p>Save favorites, get price alerts, and share your wishlist with friends</p>
+    </div>
+  </div>
+</section>
+
+<!-- Store Section -->
+<section class="store-section" id="store">
+  <div class="store-grid">
+    <div class="store-left" id="storeLeft">
+      <div class="section-label">For Store Owners</div>
+      <h2>Your store, your rules.</h2>
+      <p class="sub">Powerful tools to manage your shop, track inventory, accept orders, and handle deliveries — all from your phone. Join 500+ partner stores already growing with THStyle.</p>
+      <div class="store-features">
+        <div class="store-feature">
+          <div class="icon" style="background:rgba(233,30,99,0.1);color:#e91e63">&#128202;</div>
+          <div class="info"><h4>Inventory Management</h4><p>Add, edit, and track stock in real time. Set variants, prices, and images.</p></div>
+        </div>
+        <div class="store-feature">
+          <div class="icon" style="background:rgba(156,39,176,0.1);color:#9c27b0">&#128230;</div>
+          <div class="info"><h4>Order Fulfillment</h4><p>Accept, reject, and update order status. Manage processing, delivery, and returns.</p></div>
+        </div>
+        <div class="store-feature">
+          <div class="icon" style="background:rgba(76,175,80,0.1);color:#4caf50">&#128666;</div>
+          <div class="info"><h4>Delivery Partners</h4><p>Manage your fleet and integrate with ShipRocket for automated shipping.</p></div>
+        </div>
+        <div class="store-feature">
+          <div class="icon" style="background:rgba(29,107,240,0.1);color:#1d6bf0">&#128200;</div>
+          <div class="info"><h4>Analytics Dashboard</h4><p>Sales stats, order trends, revenue reports, and performance metrics.</p></div>
+        </div>
+        <div class="store-feature">
+          <div class="icon" style="background:rgba(255,152,0,0.1);color:#ff9800">&#128101;</div>
+          <div class="info"><h4>Customer Management</h4><p>View customer history, preferences, and feedback to improve your service.</p></div>
+        </div>
+        <div class="store-feature">
+          <div class="icon" style="background:rgba(233,30,99,0.1);color:#e91e63">&#128227;</div>
+          <div class="info"><h4>BHAV Negotiations</h4><p>Respond to customer bargaining requests and close more deals.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="store-mockup" id="storeMockup">
+      <div class="bar">
+        <div class="title">Store Dashboard</div>
+        <div class="stats">
+          <div><strong>24</strong> Orders</div>
+          <div><strong>&#8377;12.5k</strong> Today</div>
+        </div>
+      </div>
+      <div class="chart">
+        <div style="height:40%;"></div>
+        <div style="height:65%;"></div>
+        <div style="height:45%;"></div>
+        <div style="height:80%;"></div>
+        <div style="height:55%;"></div>
+        <div style="height:90%;"></div>
+        <div style="height:70%;"></div>
+      </div>
+      <div class="orders">
+        <div class="order-row">
+          <span class="name">#ORD-1001 &bull; Ananya S.</span>
+          <span class="status delivered">Delivered</span>
+        </div>
+        <div class="order-row">
+          <span class="name">#ORD-1002 &bull; Rohan M.</span>
+          <span class="status processing">Processing</span>
+        </div>
+        <div class="order-row">
+          <span class="name">#ORD-1003 &bull; Priya K.</span>
+          <span class="status cancelled">Cancelled</span>
+        </div>
+        <div class="order-row">
+          <span class="name">#ORD-1004 &bull; Simran J.</span>
+          <span class="status delivered">Delivered</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials" id="testimonials">
+  <h2>What our <span style="background:linear-gradient(135deg,#e91e63,#9c27b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">users</span> say</h2>
+  <div class="testimonials-grid" id="testimonialsGrid">
+    <div class="testimonial-card" style="transition-delay:0s">
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="text">"Amazing app! I ordered a dress and it arrived in just 12 minutes. The quality was perfect. Love the BHAV feature too!"</div>
+      <div class="author">
+        <div class="avatar">A</div>
+        <div class="info"><div class="name">Ananya Sharma</div><div class="role">Fashion Enthusiast</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card" style="transition-delay:0.1s">
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="text">"As a store owner, the dashboard is a game changer. Managing inventory and tracking orders has never been this easy."</div>
+      <div class="author">
+        <div class="avatar">R</div>
+        <div class="info"><div class="name">Rahul Verma</div><div class="role">Store Partner</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card" style="transition-delay:0.2s">
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+      <div class="text">"Love the Google Sign-In — no more forgotten passwords. The real-time tracking is super accurate. Highly recommended!"</div>
+      <div class="author">
+        <div class="avatar">P</div>
+        <div class="info"><div class="name">Priya Kaur</div><div class="role">Regular Customer</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats">
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-item"><h3 id="statCustomers" style="color:#e91e63">0</h3><p>Happy Customers</p></div>
+    <div class="stat-item"><h3 id="statStores" style="color:#9c27b0">0</h3><p>Partner Stores</p></div>
+    <div class="stat-item"><h3 id="statDelivery" style="color:#1d6bf0">0</h3><p>Avg. Delivery (min)</p></div>
+    <div class="stat-item"><h3 id="statRating" style="color:#4caf50">0</h3><p>App Rating</p></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <h2>Frequently Asked <span style="background:linear-gradient(135deg,#e91e63,#9c27b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Questions</span></h2>
+  <p class="sub">Got questions? We've got answers.</p>
+  <div id="faqContainer">
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What is THStyle?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">THStyle is a hyperlocal fashion and lifestyle delivery app that connects you with nearby stores. Browse, order, and get your favorite products delivered to your doorstep in 10-15 minutes.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        How does the delivery work?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">We partner with local stores in your area. When you place an order, a delivery partner picks it up and delivers it directly to you. You can track the entire journey in real-time through the app.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What is the BHAV bargaining system?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">BHAV (Bargain, Haggle, And Value) is our unique feature that lets you negotiate prices directly with store owners. Found a better price elsewhere? Send a counter-offer and the store can accept, decline, or make a counter-proposal.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What payment methods do you accept?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">We accept Razorpay (credit/debit cards, UPI, net banking), Google Pay, PhonePe, Paytm, and Cash on Delivery. All online payments are fully encrypted and secure.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Can I sell on THStyle?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">Absolutely! Download the THStyle Store app from the Play Store, register your shop, add your products, and start receiving orders. You get a powerful dashboard to manage inventory, orders, deliveries, and analytics.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Is there a minimum order value?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">Minimum order values vary by store. Most stores have a minimum order of &#8377;99. Delivery is free on orders above &#8377;299.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        How do I track my order?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">Once your order is confirmed, you'll see a live tracking map in the app showing your delivery partner's location in real-time. You'll also receive push notifications at every step.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What is your return policy?
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">We offer a 7-day easy return policy on most products. Simply go to your order history, request a return, and our delivery partner will pick up the item. Refunds are processed within 3-5 business days.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <div class="cta-box">
+    <h2>Ready to experience <span style="color:#e91e63;">THStyle</span>?</h2>
+    <p>Join 10,000+ happy customers. Download the app now and get &#8377;100 off your first order with code <strong style="color:#e91e63">THSTYLE100</strong>.</p>
+    <div class="cta-buttons">
+      <a href="#" class="download-btn android">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 16.48c-.553 1.077-1.275 2.065-2.293 2.945-.875.758-1.508.788-2.25.367a72.464 72.464 0 0 1-1.41-.77c-.446-.246-.868-.356-1.387-.35-.777.009-1.554.176-2.326.498-.348.145-.633.243-.847.307-.213.064-.4.096-.562.096-.445-.005-.872-.192-1.398-.596-1.856-1.424-3.07-4.002-3.55-6.269-.269-1.275-.2-2.493.265-3.553.442-1.008 1.208-1.844 2.28-2.49.855-.517 1.744-.79 2.668-.823.478-.015.964.09 1.455.315.79.362 1.32.367 2.247.042.638-.223 1.21-.485 1.732-.775.56-.312 1.063-.476 1.52-.476.567.003 1.098.244 1.544.616.094.078.26.208.498.389l.227.178c.195.153.398.33.598.512.396.36.657.732.813 1.077-.644.395-1.104.919-1.404 1.576-.33.72-.358 1.484-.08 2.286.284.821.78 1.457 1.48 1.94.346.24.72.414 1.117.532-.108.334-.24.65-.399.953zM14.692 3.5c-.07.963-.42 1.852-1.025 2.623-.56.714-1.354 1.213-2.173 1.293-.02.165-.03.33-.03.495 0 .708.127 1.34.382 1.89.083.18.178.35.282.514h-.002c-.033.05-.066.1-.102.148-.396.55-.93 1.005-1.577 1.362-.688.38-1.396.606-2.114.66l.023.003.006.002h-.012l.008.002c-.178.022-.356.033-.532.033-.75 0-1.506-.178-2.263-.535.508-2.06 1.696-3.786 3.464-4.96.893-.592 1.87-.97 2.92-1.134.117-.556.336-1.06.67-1.51.39-.527.88-.96 1.44-1.286.557-.326 1.155-.515 1.783-.57.01.15.02.3.034.45z"/></svg>
+        Download for Android
+      </a>
+      <a href="#" class="download-btn ios">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+        Coming soon on iOS
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <img src="logo.png" alt="THStyle" style="width:34px;height:34px;border-radius:10px;object-fit:cover" />
+        <span style="font-size:20px;font-weight:900">THStyle</span>
+      </div>
+      <p>Fashion at high speed. Shop the latest trends from top brands near you and get delivery in minutes. Download the app today.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#store">For Stores</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Refund Policy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About Us</a>
+      <a href="#">Careers</a>
+      <a href="#">Press Kit</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&#169; 2026 THStyle. All rights reserved. Made with &#9829; in India.</p>
+    <div class="footer-social">
+      <a href="#" aria-label="Instagram">&#9679;&#9679;&#9679;</a>
+      <a href="#" aria-label="Facebook">f</a>
+      <a href="#" aria-label="Twitter">&#120143;</a>
+      <a href="#" aria-label="YouTube">&#9654;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav scroll background
+const nav = document.getElementById('nav');
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// Intersection Observer for scroll-reveal elements
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -40px 0px' };
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.feature-card, .step, .testimonial-card, .faq-item, .showcase-item').forEach(el => revealObserver.observe(el));
+
+// Observe store section elements
+const storeLeft = document.getElementById('storeLeft');
+const storeMockup = document.getElementById('storeMockup');
+if (storeLeft) revealObserver.observe(storeLeft);
+if (storeMockup) revealObserver.observe(storeMockup);
+
+// Animated counter
+function animateCounter(id, target, suffix = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let current = 0;
+  const step = Math.max(1, Math.floor(target / 60));
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    if (id === 'statRating') {
+      el.textContent = (current / 10).toFixed(1);
+    } else {
+      el.textContent = current + suffix;
+    }
+  }, 25);
+}
+
+// Trigger counters when stats section is visible
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter('statCustomers', 10500, '+');
+      animateCounter('statStores', 528, '+');
+      animateCounter('statDelivery', 14);
+      animateCounter('statRating', 48);
+      statsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+const statsSection = document.querySelector('.stats');
+if (statsSection) statsObserver.observe(statsSection);
+
+// FAQ toggle
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+  // Toggle clicked
+  if (!wasOpen) item.classList.add('open');
+}
+
+// Mobile menu
+function openMobileMenu() {
+  document.getElementById('mobileMenu').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

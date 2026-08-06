@@ -1,0 +1,95 @@
+This roadmap document is designed to help you build a high-fidelity **UI MVP (Minimum Viable Product)** in Flutter. Since you are focusing on **Frontend Only**, this roadmap prioritizes the visual experience and "simulated logic" to show how the app works.
+
+---
+
+# 🗺️ UI MVP Roadmap: ZippyStyle 2026
+
+## Phase 1: Foundation & Branding (Days 1-2)
+*Goal: Set up the visual language of the app.*
+
+*   **Design System:**
+    *   Implement the **Color Palette** in `ThemeData` (Electric Volt #E2FB4D, Ink Black #121212).
+    *   Choose a font: **Poppins** or **Montserrat** (Modern, clean, and bold).
+*   **Asset Preparation:**
+    *   Find/Create 4 base mannequins (Slim, Average, Athletic, Plus-size).
+    *   Download 10 transparent PNGs of clothes/shoes (remove backgrounds using *Remove.bg*).
+    *   Create "Shop Logo" placeholders for local shops.
+
+## Phase 2: Onboarding & "Digital Twin" Setup (Days 3-5)
+*Goal: Personalize the app for the user.*
+
+*   **Splash Screen:** High-energy animation of a lightning bolt turning into a hanger.
+*   **The Avatar Creator:**
+    *   UI for selecting Gender.
+    *   Sliders for **Height**, **Weight**, and a **Skin Tone** picker.
+    *   **Result:** A "Digital Twin" preview that updates in real-time as the user moves sliders.
+
+## Phase 3: The Hyperlocal Home Feed (Days 6-8)
+*Goal: Simulate the "Nearby Shop" experience.*
+
+*   **Location Header:** "Delivering to [Your Area] in 28 mins."
+*   **Shop Cards:**
+    *   Display Shop Name (e.g., *Sagar Footwear*).
+    *   Display distance (e.g., *0.8 km away*).
+    *   Display "Quick Tag": *Shoes, Streetwear, Ethnic.*
+*   **Product Grid:** 
+    *   Big images of clothes with a "Live Try-on" badge.
+    *   "Bargainable" tag on items that allow price negotiation.
+
+## Phase 4: The "Magic" Product Screen (Days 9-12)
+*Goal: Build the two core USPs (Try-On and Bargain).*
+
+*   **The Virtual Mirror Section:**
+    *   Top half of screen: The User's Digital Twin.
+    *   Logic: When a user taps a color/size, the clothing image on the twin changes instantly (Layered `Stack`).
+*   **The Bargain Engine:**
+    *   A custom-styled **Slider** (Sunset Orange).
+    *   A "Bhaiya Bot" chat bubble that updates text based on the slider value.
+    *   *Example:* Slider at ₹900 $\rightarrow$ "Bhaiya: Deal!" | Slider at ₹700 $\rightarrow$ "Bhaiya: Loss ho jayega!"
+
+## Phase 5: Checkout & Simulated Tracking (Days 13-15)
+*Goal: Show the "Quick Commerce" speed.*
+
+*   **Quick Checkout:** Minimalist UPI-focused payment screen.
+*   **The "30-Min" Tracker:**
+    *   A Google Maps view (hardcoded).
+    *   A **Progress Timeline:** *Accepted $\rightarrow$ Packed $\rightarrow$ Out for Delivery.*
+    *   **Simulated Rider:** An icon that moves along a path on the map using a `Timer`.
+    *   **Countdown Clock:** Starts at 29:59 and counts down.
+
+---
+
+# 🛠️ MVP Technical Checklist (Frontend Only)
+
+| Feature | Flutter Implementation Tip |
+| :--- | :--- |
+| **Digital Twin** | Use `Stack` + `Positioned`. Layer the body, then pants, then shirt. |
+| **Shop Feed** | Use `ListView.builder` with `ListTile` or custom `Card` widgets. |
+| **Bargain Logic** | Use `setState` or `Provider` to change text based on `onChanged` of the Slider. |
+| **Mock Data** | Create a `List<Map>` containing product names, images, and "Floor Prices." |
+| **Animations** | Use `AnimatedContainer` or `Hero` animations for smooth transitions between home and product screens. |
+
+---
+
+ 📂 UI MVP Folder Structure
+
+lib/
+├── main.dart                 # App Entry & Theme
+├── models/
+│   ├── shop_model.dart       # Shop details
+│   └── product_model.dart    # Product info & floor prices
+├── screens/
+│   ├── home_screen.dart      # Shop & Product feed
+│   ├── product_detail.dart   # The Try-on & Bargain screen
+│   ├── avatar_setup.dart     # Digital Twin creator
+│   └── tracking_screen.dart  # 30-min countdown map
+├── widgets/
+│   ├── digital_twin_view.dart # The layered mannequin logic
+│   ├── bargain_slider.dart    # Custom slider UI
+│   └── shop_card.dart         # Individual shop UI
+└── utils/
+    ├── app_colors.dart       # Your 2026 Palette
+    └── mock_data.dart        # Pre-filled list of shops/products
+```
+
+

@@ -1,0 +1,240 @@
+/* HeroNew.css - Light Fashion Aesthetic */
+
+.hero-new {
+  background-color: #e8e8e8;
+  min-height: 90vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  font-family: 'Playfair Display', serif;
+  color: #1a1a1a;
+  overflow: hidden;
+  border-bottom: 2px solid #333;
+}
+
+.hero-top-dot {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: #1a1a1a;
+  border-radius: 50%;
+}
+
+.hero-new-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hero-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Left Column */
+.hero-left-new {
+  padding-left: 20px;
+}
+
+.hero-titles h1 {
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 2px;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-style: italic;
+  font-weight: 400;
+  color: #5c4d44; /* slight brownish tint from image */
+  margin-top: 10px;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+.hero-description {
+  font-family: 'Outfit', sans-serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 60px;
+  max-width: 300px;
+}
+
+.hero-socials {
+  display: flex;
+  gap: 16px;
+}
+
+.hero-socials a {
+  width: 28px;
+  height: 28px;
+  background-color: #1a1a1a;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.hero-socials a:hover {
+  transform: translateY(-3px);
+  background-color: #333;
+}
+
+/* Center Column (Arch Image) */
+.hero-center-new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1.2;
+}
+
+.arch-image-container {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 0.8;
+  background-color: #d8d8d8;
+  border-radius: 240px 240px 0 0;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  margin-top: 40px;
+}
+
+.arch-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Right Column */
+.hero-right-new {
+  align-items: center;
+  padding-right: 20px;
+  text-align: center;
+  gap: 40px;
+}
+
+.hero-right-title {
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.hero-btn-dark {
+  background-color: #2b2a2e;
+  color: #fff;
+  border: none;
+  padding: 14px 48px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.hero-btn-dark:hover {
+  background-color: #1a1a1a;
+  transform: translateY(-2px);
+}
+
+.hero-offer {
+  font-size: 1.8rem;
+  letter-spacing: 4px;
+  color: #1a1a1a;
+}
+
+.hero-website {
+  font-style: italic;
+  font-size: 16px;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+}
+
+.color-palette {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.dot-black { background-color: #1a1a1a; }
+.dot-brown { background-color: #6a4f3f; }
+.dot-tan { background-color: #d1bfae; }
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .hero-new-container {
+    flex-direction: column;
+    gap: 60px;
+    text-align: center;
+  }
+  
+  .hero-titles h1 {
+    font-size: 3rem;
+  }
+  
+  .hero-description {
+    margin: 0 auto 40px;
+  }
+  
+  .hero-socials {
+    justify-content: center;
+  }
+  
+  .arch-image-container {
+    margin-top: 0;
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-new {
+    padding: 40px 24px;
+    min-height: auto;
+  }
+
+  .hero-titles h1 {
+    font-size: 2.5rem;
+  }
+
+  .arch-image-container {
+    max-width: 300px;
+  }
+  
+  .hero-btn-dark {
+    padding: 12px 32px;
+    font-size: 16px;
+  }
+
+  .hero-offer {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "ecommerce-testing-apis",
+  "version": "1.0.0",
+  "description": "Mock Payment Gateway and Delivery Agents APIs for e-commerce app testing",
+  "main": "index.js",
+  "scripts": {
+    "payment-api": "node payment-gateway-api.js",
+    "delivery-api": "node delivery-agents-api.js",
+    "start": "concurrently \"npm run payment-api\" \"npm run delivery-api\"",
+    "test": "echo \"Testing APIs - Use Postman or curl commands\""
+  },
+  "keywords": [
+    "ecommerce",
+    "payment-gateway",
+    "delivery",
+    "testing",
+    "mock-api"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
