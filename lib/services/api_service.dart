@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'prefs_service.dart';
@@ -7,11 +6,10 @@ import '../models/api_models.dart';
 import 'mock_data.dart';
 
 class ApiService {
-  static String get _host => Platform.isAndroid ? '10.0.2.2' : 'localhost';
-  static String get baseUrl => 'http://${_host}:3000/api';
-  static String get baseDomain => 'http://$_host:3000';
+  static const String baseDomain = 'https://fascism-bullseye-perjury.ngrok-free.dev';
+  static const String baseUrl = '$baseDomain/api';
   static String? _token;
-  static bool useMock = true;
+  static bool useMock = false;
 
   static String resolveImage(String? path) {
     if (path == null || path.isEmpty) return '';
@@ -27,6 +25,7 @@ class ApiService {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
     };
     if (_token != null) {
       headers['Authorization'] = 'Bearer $_token';
@@ -54,7 +53,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final productsList = data['products'] as List<dynamic>? ?? [];
+      final productsList = (data is Map ? (data['products'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return productsList.map((json) => ApiProduct.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       final body = response.body.length > 200 ? '${response.body.substring(0, 200)}...' : response.body;
@@ -68,7 +67,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final categoriesList = data['categories'] as List<dynamic>? ?? [];
+      final categoriesList = (data is Map ? (data['categories'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return categoriesList.map((json) => ApiCategory.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       final body = response.body.length > 200 ? '${response.body.substring(0, 200)}...' : response.body;
@@ -82,7 +81,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final list = data['sub_categories'] as List<dynamic>? ?? data['categories'] as List<dynamic>? ?? [];
+      final list = (data is Map ? (data['sub_categories'] ?? data['categories'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return list.map((json) => ApiCategory.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       final body = response.body.length > 200 ? '${response.body.substring(0, 200)}...' : response.body;
@@ -96,7 +95,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final shopsList = data['shops'] as List<dynamic>? ?? [];
+      final shopsList = (data is Map ? (data['shops'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return shopsList.map((json) => ApiShop.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       final body = response.body.length > 200 ? '${response.body.substring(0, 200)}...' : response.body;
@@ -110,7 +109,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final productsList = data['products'] as List<dynamic>? ?? [];
+      final productsList = (data is Map ? (data['products'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return productsList.map((json) => ApiProduct.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       final body = response.body.length > 200 ? '${response.body.substring(0, 200)}...' : response.body;
@@ -124,7 +123,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final productsList = data['products'] as List<dynamic>? ?? [];
+      final productsList = (data is Map ? (data['products'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return productsList.map((json) => ApiProduct.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       final body = response.body.length > 200 ? '${response.body.substring(0, 200)}...' : response.body;
@@ -140,7 +139,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final list = data['payment_methods'] as List<dynamic>? ?? [];
+      final list = (data is Map ? (data['payment_methods'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return list.map((j) => ApiPaymentMethod.fromJson(j as Map<String, dynamic>)).toList();
     } else {
       throw Exception('Failed to load payment methods');
@@ -153,7 +152,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final list = data['addresses'] as List<dynamic>? ?? [];
+      final list = (data is Map ? (data['addresses'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
       return list.map((j) => ApiAddress.fromJson(j as Map<String, dynamic>)).toList();
     } else {
       throw Exception('Failed to load addresses');
@@ -219,7 +218,7 @@ class ApiService {
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['purchases'] as List<dynamic>? ?? [];
+      return (data is Map ? (data['purchases'] ?? data['data'] ?? []) : (data is List ? data : [])) as List<dynamic>;
     } else {
       throw Exception('Failed to load purchases');
     }
@@ -230,7 +229,8 @@ class ApiService {
     final url = Uri.parse('$baseUrl/user');
     final response = await http.get(url, headers: _headers);
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final data = jsonDecode(response.body);
+      return (data is Map && data.containsKey('user') && data['user'] is Map) ? (data['user'] as Map<String, dynamic>) : (data is Map<String, dynamic> ? data : {});
     } else {
       throw Exception('Failed to load user');
     }

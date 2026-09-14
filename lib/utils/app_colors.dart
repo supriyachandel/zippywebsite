@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Palette — ZippyStyle 2026
-  static const Color inkBlack = Color(0xFF121212); // Deep premium black
-  static const Color electricVolt = Color(0xFFE2FB4D); // Vibrant accent
-
+  // Brand Palette — thStyle Website Theme
+  static const Color backgroundBeige = Color(0xFFF3F2F0); // Soft website background
+  static const Color textCharcoal = Color(0xFF222222); // Deep charcoal for text and buttons
+  static const Color accentBrown = Color(0xFF8B6B53); // Accent brown from dots
+  static const Color accentTan = Color(0xFFD6C8B8); // Accent tan from dots
+  
   static const Color primaryDark = Color(0xFF0A0A0A);
   static const Color pureWhite = Color(0xFFFFFFFF);
   static const Color offWhite = Color(0xFFF5F5F0);
-  static const Color softGrey = Color(0xFF2C2C2C); // Darker soft grey for dark mode
+  static const Color softGrey = Color(0xFFE8E8E4); // Lighter grey for light mode borders
   
   // Legacy / mapped names
   static const Color myntraPink = Color(0xFFE63946);

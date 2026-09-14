@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/user_state.dart';
 import '../services/api_service.dart';
-import '../utils/app_theme.dart';
 import 'address_list_screen.dart';
 import 'order_history_screen.dart';
 import 'edit_profile_screen.dart';
-
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -34,8 +32,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ]);
       if (mounted) {
         setState(() {
-          _orderCount = (results[0] as List).length;
-          _addressCount = (results[1] as List).length;
+          _orderCount = results[0].length;
+          _addressCount = results[1].length;
         });
       }
     } catch (_) {}

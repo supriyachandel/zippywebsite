@@ -4,9 +4,10 @@
 
 | App | Platform | URL |
 |-----|----------|-----|
-| User | Android Emulator | `http://10.0.2.2:3000/api` |
-| User | iOS / macOS | `http://localhost:3000/api` |
-| Store | All | `https://<ngrok-url>.ngrok-free.dev/api` |
+| User App | Production / Live | `https://fascism-bullseye-perjury.ngrok-free.dev/api` |
+| Store App | Production / Live | `https://fascism-bullseye-perjury.ngrok-free.dev/api` |
+| Local Dev | Android Emulator | `http://10.0.2.2:3000/api` |
+| Local Dev | iOS / macOS | `http://localhost:3000/api` |
 
 ## Headers
 

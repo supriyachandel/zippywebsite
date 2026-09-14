@@ -58,16 +58,32 @@ class _ExploreScreenState extends State<ExploreScreen> {
   List<_SidebarItem> get _sidebarItems => _categories.map((cat) => _SidebarItem.category(cat)).toList();
 
   List<ApiCategory> _subCatsFor(_SidebarItem item) {
-    return _subCategories.where((s) => s.categoryId == item.category.id).toList();
+    final subs = _subCategories.where((s) => s.categoryId == item.category.id).toList();
+    if (subs.isEmpty) {
+      return [item.category];
+    }
+    return subs;
   }
 
   List<ApiProduct> get _filteredProducts {
     if (_selectedSubCatId != null) {
       var filtered = _products.where((p) => p.subCategoryId == _selectedSubCatId);
+      if (filtered.isEmpty && _selectedSidebarIndex < _sidebarItems.length) {
+        final catId = _sidebarItems[_selectedSidebarIndex].category.id;
+        filtered = _products.where((p) => p.subCategoryId == catId);
+      }
       if (_selectedGender != null) filtered = filtered.where((p) => p.gender == _selectedGender);
       return filtered.toList();
     }
-    return [];
+    if (_selectedSidebarIndex < _sidebarItems.length) {
+      final currentCatId = _sidebarItems[_selectedSidebarIndex].category.id;
+      final subIds = _subCategories.where((s) => s.categoryId == currentCatId).map((s) => s.id).toSet();
+      subIds.add(currentCatId);
+      var filtered = _products.where((p) => subIds.contains(p.subCategoryId));
+      if (_selectedGender != null) filtered = filtered.where((p) => p.gender == _selectedGender);
+      return filtered.toList();
+    }
+    return _products;
   }
 
   @override

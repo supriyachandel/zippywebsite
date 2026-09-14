@@ -7,7 +7,7 @@ import 'store_mock_data.dart';
 
 class StoreApiService {
   static const String baseUrl = 'https://fascism-bullseye-perjury.ngrok-free.dev/api';
-  static bool useMock = true;
+  static bool useMock = false;
   static String? _token;
   static int? _shopId;
 
@@ -15,6 +15,7 @@ class StoreApiService {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
     };
     if (_token != null) {
       headers['Authorization'] = 'Bearer $_token';

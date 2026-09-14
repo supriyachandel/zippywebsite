@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/cart_state.dart';
 import '../models/api_models.dart';
 import '../services/api_service.dart';
-import '../utils/app_theme.dart';
 import 'shop_details_screen.dart';
-import 'cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ApiProduct product;

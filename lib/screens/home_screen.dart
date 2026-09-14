@@ -6,7 +6,6 @@ import '../models/user_state.dart';
 import '../models/api_models.dart';
 import '../services/api_service.dart';
 import '../utils/app_colors.dart';
-import '../utils/app_theme.dart';
 import 'product_detail_screen.dart';
 import 'profile_screen.dart';
 import 'explore_screen.dart';
@@ -130,8 +129,6 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
   List<ApiCategory> _subCategories = [];
   ApiAddress? _selectedAddress;
   bool _isLoading = true;
-  late PageController _productPageController;
-  double _currentPage = 0;
   late PageController _bannerController;
   int _currentBanner = 0;
   Timer? _bannerTimer;
@@ -146,10 +143,6 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _productPageController = PageController(viewportFraction: 0.75)
-      ..addListener(() {
-        setState(() => _currentPage = _productPageController.page ?? 0);
-      });
     _bannerController = PageController()
       ..addListener(() {
         final page = _bannerController.page?.round() ?? 0;
@@ -178,7 +171,6 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
 
   @override
   void dispose() {
-    _productPageController.dispose();
     _bannerController.dispose();
     _bannerTimer?.cancel();
     super.dispose();
@@ -191,14 +183,21 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
         ApiService.getProducts(),
         ApiService.getShops(),
         ApiService.getAddresses(),
+        ApiService.getCategories(),
         ApiService.getSubCategories(),
       ]);
       if (mounted) {
+        final products = results[0] as List<ApiProduct>;
+        final shops = results[1] as List<ApiShop>;
+        final addresses = results[2] as List<ApiAddress>;
+        final categories = results[3] as List<ApiCategory>;
+        final subCategories = results[4] as List<ApiCategory>;
+
         setState(() {
-          _products = (results[0] as List<ApiProduct>)..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          _shops = results[1] as List<ApiShop>;
-          _addresses = results[2] as List<ApiAddress>;
-          _subCategories = results[3] as List<ApiCategory>;
+          _products = List<ApiProduct>.from(products)..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          _shops = shops;
+          _addresses = addresses;
+          _subCategories = subCategories.isNotEmpty ? subCategories : categories;
           _selectedAddress = _addresses.firstOrNull;
           _isLoading = false;
         });
@@ -314,8 +313,6 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final userState = Provider.of<UserState>(context);
-    final isFemale = userState.gender == Gender.female;
 
     if (_isLoading) {
       return Scaffold(
@@ -349,18 +346,30 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
             const SizedBox(height: 24),
             _buildBannerSlider(cs),
             const SizedBox(height: 28),
-            _buildSectionHeader("Categories", cs),
-            const SizedBox(height: 12),
+            _buildSectionHeader(
+              "Categories",
+              cs,
+              subtitle: "Browse by department & styles",
+            ),
+            const SizedBox(height: 14),
             _buildCategoryCarousel(cs, _subCategories),
-            const SizedBox(height: 28),
-            _buildSectionHeader("Trending Now", cs),
-            const SizedBox(height: 8),
+            const SizedBox(height: 32),
+            _buildSectionHeader(
+              "Trending Now",
+              cs,
+              subtitle: "Top rated styles loved by shoppers",
+            ),
+            const SizedBox(height: 14),
             _buildProductSlider(cs),
-            const SizedBox(height: 28),
-            _buildSectionHeader("Stores Nearby", cs),
-            const SizedBox(height: 12),
+            const SizedBox(height: 32),
+            _buildSectionHeader(
+              "Stores Nearby",
+              cs,
+              subtitle: "Boutiques with express 15-minute delivery",
+            ),
+            const SizedBox(height: 14),
             _buildStoreShowcase(cs),
-            const SizedBox(height: 40),
+            const SizedBox(height: 48),
           ],
         ),
       ),
@@ -618,34 +627,79 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildSectionHeader(String title, ColorScheme cs) {
+  Widget _buildSectionHeader(String title, ColorScheme cs, {String? subtitle, VoidCallback? onSeeAll}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: cs.onSurface,
-              letterSpacing: -0.5,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: cs.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: cs.onSurface,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                  ],
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 3),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: cs.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExploreScreen())),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Row(
-              children: [
-                Text("View All", style: TextStyle(color: cs.primary, fontWeight: FontWeight.w700, fontSize: 13)),
-                const SizedBox(width: 2),
-                Icon(Icons.chevron_right_rounded, color: cs.primary, size: 18),
-              ],
+          GestureDetector(
+            onTap: onSeeAll ?? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExploreScreen())),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "See all",
+                    style: TextStyle(
+                      color: cs.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Icon(Icons.arrow_forward_ios_rounded, color: cs.primary, size: 10),
+                ],
+              ),
             ),
           ),
         ],
@@ -762,22 +816,29 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
   Widget _buildProductSlider(ColorScheme cs) {
     if (_products.isEmpty) {
       return Container(
-        height: 380,
+        height: 260,
         margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: cs.outlineVariant.withOpacity(0.3)),
+          color: cs.surfaceContainerHighest.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: cs.outline.withValues(alpha: 0.2)),
         ),
         alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.shopping_bag_outlined, size: 40, color: cs.onSurface.withOpacity(0.25)),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: cs.primary.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.shopping_bag_outlined, size: 32, color: cs.primary.withValues(alpha: 0.4)),
+            ),
             const SizedBox(height: 12),
             Text(
-              "No products available",
-              style: TextStyle(color: cs.onSurface.withOpacity(0.4), fontWeight: FontWeight.bold),
+              "No trending products available",
+              style: TextStyle(color: cs.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600, fontSize: 14),
             ),
           ],
         ),
@@ -785,49 +846,41 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
     }
 
     return SizedBox(
-      height: 400,
-      child: PageView.builder(
-        controller: _productPageController,
-        itemCount: _products.length,
+      height: 335,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _products.length.clamp(0, 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
         itemBuilder: (context, index) {
-          double scale = (1 - ((_currentPage - index).abs() * 0.12)).clamp(0.88, 1.0);
-          return TweenAnimationBuilder<double>(
-            tween: Tween(begin: scale, end: scale),
-            duration: const Duration(milliseconds: 200),
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: value,
-                child: child,
-              );
-            },
-            child: _buildSliderProductCard(context, _products[index], cs),
-          );
+          return _buildSliderProductCard(context, _products[index], cs);
         },
       ),
     );
   }
 
   Widget _buildSliderProductCard(BuildContext context, ApiProduct product, ColorScheme cs) {
-    final hasDiscount = product.discountPriceAsDouble > 0;
+    final hasDiscount = product.discountPriceAsDouble > 0 && product.discountPriceAsDouble < product.priceAsDouble;
     final price = hasDiscount ? product.discountPriceAsDouble : product.priceAsDouble;
     final cartState = context.watch<CartState>();
     final qty = cartState.quantityOf(product.id);
     final outOfStock = product.isOutOfStock;
-    final lowStock = product.isLowStock;
     final remaining = product.quantityAsInt - qty;
 
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        width: 200,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.06), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.07),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -835,113 +888,122 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 6,
-              child: Stack(
-                children: [
-                  Container(
+            // Image Header Container
+            Stack(
+              children: [
+                Container(
+                  height: 195,
+                  width: double.infinity,
+                  color: const Color(0xFFF6F6F6),
+                  child: Image.network(
+                    ApiService.resolveImage(product.displayImage),
                     width: double.infinity,
-                    color: cs.surfaceContainerHighest.withOpacity(0.3),
-                    child: Image.network(
-                      ApiService.resolveImage(product.displayImage),
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Center(
-                        child: Icon(Icons.image_not_supported_outlined, color: cs.onSurface.withOpacity(0.15), size: 40),
-                      ),
+                    height: 195,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Icon(Icons.image_not_supported_outlined, color: cs.onSurface.withValues(alpha: 0.2), size: 36),
                     ),
                   ),
-                  if (outOfStock)
-                    Positioned.fill(
-                      child: Container(
-                        color: Colors.white.withOpacity(0.7),
-                        child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade600,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              "OUT OF STOCK",
-                              style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 0.5),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.star_rounded, color: Colors.amber, size: 13),
-                          const SizedBox(width: 3),
-                          Text(
-                            "4.8",
-                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
-                          ),
+                ),
+                // Gradient top overlay for badge clarity
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 60,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.35),
+                          Colors.transparent,
                         ],
                       ),
                     ),
                   ),
+                ),
+                // Discount / Hot badge
+                if (hasDiscount && !outOfStock)
                   Positioned(
-                    top: 12,
-                    right: 12,
+                    top: 10,
+                    left: 10,
                     child: Container(
-                      height: 36,
-                      width: 36,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        shape: BoxShape.circle,
+                        color: cs.primary,
+                        borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 6,
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Icon(Icons.favorite_border_rounded, color: cs.error.withOpacity(0.7), size: 18),
-                    ),
-                  ),
-                  if (!outOfStock && hasDiscount)
-                    Positioned(
-                      bottom: 12,
-                      left: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: cs.primary,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: cs.primary.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          "${((product.priceAsDouble - product.discountPriceAsDouble) / product.priceAsDouble * 100).round()}% OFF",
-                          style: TextStyle(color: cs.onPrimary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.3),
+                      child: Text(
+                        "${((product.priceAsDouble - product.discountPriceAsDouble) / product.priceAsDouble * 100).round()}% OFF",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ),
+                // Favorite Button
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    height: 32,
+                    width: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.92),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.favorite_border_rounded, color: Colors.black87, size: 16),
+                  ),
+                ),
+                // Out of stock overlay
+                if (outOfStock)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      alignment: Alignment.center,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade700,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          "SOLD OUT",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
+            // Product Details
             Expanded(
-              flex: 4,
               child: Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -950,110 +1012,90 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          product.gender.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: cs.onSurface.withValues(alpha: 0.45),
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
                           product.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontWeight: FontWeight.w800,
-                            color: outOfStock ? cs.onSurface.withOpacity(0.35) : cs.onSurface,
-                            letterSpacing: -0.3,
+                            color: outOfStock ? cs.onSurface.withValues(alpha: 0.4) : cs.onSurface,
+                            letterSpacing: -0.2,
                           ),
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          product.description ?? "Premium Quality",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12, color: cs.onSurface.withOpacity(0.4), fontWeight: FontWeight.w500),
-                        ),
-                        if (!outOfStock && lowStock) ...[
-                          const SizedBox(height: 3),
-                          Text(
-                            "Only ${product.quantityAsInt} left!",
-                            style: TextStyle(fontSize: 10, color: Colors.orange.shade700, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                        if (!outOfStock && remaining > 0 && qty > 0 && remaining <= 5) ...[
-                          const SizedBox(height: 3),
-                          Text(
-                            "Only $remaining left!",
-                            style: TextStyle(fontSize: 10, color: Colors.orange.shade700, fontWeight: FontWeight.w700),
-                          ),
-                        ],
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Price column
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  "₹${price.round()}",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w900,
-                                    color: outOfStock ? cs.onSurface.withOpacity(0.25) : cs.onSurface,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                                if (hasDiscount) ...[
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "₹${product.priceAsDouble.round()}",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      decoration: TextDecoration.lineThrough,
-                                      color: cs.onSurface.withOpacity(0.3),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ],
+                            Text(
+                              "₹${price.round()}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: outOfStock ? cs.onSurface.withValues(alpha: 0.3) : cs.onSurface,
+                                letterSpacing: -0.4,
+                              ),
                             ),
+                            if (hasDiscount)
+                              Text(
+                                "₹${product.priceAsDouble.round()}",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  decoration: TextDecoration.lineThrough,
+                                  color: cs.onSurface.withValues(alpha: 0.35),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                           ],
                         ),
+                        // Quick Add Button
                         if (outOfStock)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: cs.errorContainer.withOpacity(0.25),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              "Sold Out",
-                              style: TextStyle(color: cs.error, fontSize: 11, fontWeight: FontWeight.w800),
-                            ),
-                          )
+                          const SizedBox()
                         else if (qty == 0)
                           GestureDetector(
                             onTap: () => cartState.incrementProduct(product),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
                                 color: cs.primary,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: cs.primary.withOpacity(0.25),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
+                                    color: cs.primary.withValues(alpha: 0.25),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.add_shopping_cart_rounded, color: Colors.white, size: 14),
-                                  const SizedBox(width: 4),
+                                children: const [
+                                  Icon(Icons.add_rounded, color: Colors.white, size: 14),
+                                  SizedBox(width: 2),
                                   Text(
                                     "ADD",
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 10,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1061,11 +1103,11 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
                           )
                         else
                           Container(
-                            height: 34,
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            height: 28,
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
                             decoration: BoxDecoration(
                               color: cs.primary,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -1073,22 +1115,22 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
                                 GestureDetector(
                                   onTap: () => cartState.decrementProduct(product),
                                   child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 6),
-                                    child: Icon(Icons.remove_rounded, color: Colors.white, size: 18),
+                                    padding: EdgeInsets.symmetric(horizontal: 4),
+                                    child: Icon(Icons.remove_rounded, color: Colors.white, size: 14),
                                   ),
                                 ),
                                 Text(
                                   "$qty",
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13),
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11),
                                 ),
                                 GestureDetector(
                                   onTap: remaining > 1 ? () => cartState.incrementProduct(product) : null,
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
                                     child: Icon(
                                       Icons.add_rounded,
                                       color: remaining > 1 ? Colors.white : Colors.white38,
-                                      size: 18,
+                                      size: 14,
                                     ),
                                   ),
                                 ),
@@ -1112,21 +1154,28 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Container(
-          height: 160,
+          height: 150,
           decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: cs.outlineVariant.withOpacity(0.3)),
+            color: cs.surfaceContainerHighest.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: cs.outline.withValues(alpha: 0.2)),
           ),
           alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.storefront_rounded, size: 40, color: cs.onSurface.withOpacity(0.2)),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: cs.primary.withValues(alpha: 0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.storefront_rounded, size: 28, color: cs.primary.withValues(alpha: 0.4)),
+              ),
+              const SizedBox(height: 10),
               Text(
-                "No stores available",
-                style: TextStyle(color: cs.onSurface.withOpacity(0.4), fontWeight: FontWeight.w600, fontSize: 14),
+                "No nearby stores available",
+                style: TextStyle(color: cs.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600, fontSize: 14),
               ),
             ],
           ),
@@ -1135,12 +1184,13 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
     }
 
     return SizedBox(
-      height: 185,
+      height: 200,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _shops.length.clamp(0, 5),
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemCount: _shops.length.clamp(0, 6),
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
         itemBuilder: (context, i) => _buildStoreCard(_shops[i], cs),
       ),
     );
@@ -1150,14 +1200,15 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ShopDetailsScreen(shop: shop))),
       child: Container(
-        width: 200,
+        width: 270,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.06), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 16,
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 18,
               offset: const Offset(0, 6),
             ),
           ],
@@ -1166,96 +1217,189 @@ class _HomeContentState extends State<HomeContent> with TickerProviderStateMixin
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Store Banner
             Container(
-              height: 90,
+              height: 110,
               width: double.infinity,
-              color: cs.surfaceContainerHighest.withOpacity(0.5),
+              color: const Color(0xFFEEEEEE),
               child: Stack(
+                fit: StackFit.expand,
                 children: [
                   Image.network(
                     ApiService.resolveImage(shop.image),
-                    width: double.infinity,
-                    height: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Center(
-                      child: Icon(Icons.storefront_rounded, color: cs.onSurface.withOpacity(0.15), size: 30),
+                    errorBuilder: (_, __, ___) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            cs.primary.withValues(alpha: 0.7),
+                            cs.primary.withValues(alpha: 0.4),
+                          ],
+                        ),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.storefront_rounded, color: Colors.white, size: 36),
+                      ),
                     ),
                   ),
+                  // Dark Vignette Gradient
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.2),
+                          Colors.black.withValues(alpha: 0.7),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Rating Badge Top Left
                   Positioned(
-                    top: 8,
-                    left: 8,
+                    top: 10,
+                    left: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.65),
+                        color: Colors.black.withValues(alpha: 0.65),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
-                          const SizedBox(width: 3),
-                          const Text(
-                            "4.5",
-                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
+                        children: const [
+                          Icon(Icons.star_rounded, color: Colors.amber, size: 13),
+                          SizedBox(width: 3),
+                          Text(
+                            "4.8",
+                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900),
                           ),
                         ],
                       ),
                     ),
                   ),
+                  // Delivery Time Pill Top Right
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    top: 10,
+                    right: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.successGreen.withOpacity(0.9),
+                        color: AppColors.successGreen,
                         borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.successGreen.withValues(alpha: 0.4),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        "Verified",
-                        style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w800),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.bolt_rounded, color: Colors.white, size: 12),
+                          SizedBox(width: 2),
+                          Text(
+                            "15 MINS",
+                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.4),
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+                  // Store Name on Banner bottom
+                  Positioned(
+                    left: 12,
+                    bottom: 10,
+                    right: 12,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            shop.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.3,
+                              shadows: [
+                                Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(0, 1)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: Colors.blueAccent,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.check, color: Colors.white, size: 10),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    shop.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: cs.onSurface),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    shop.description ?? "Specialty fashion store",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, color: cs.onSurface.withOpacity(0.45), fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.delivery_dining_rounded, size: 12, color: AppColors.successGreen),
-                      const SizedBox(width: 4),
-                      Text(
-                        "15 min",
-                        style: TextStyle(color: AppColors.successGreen, fontSize: 10, fontWeight: FontWeight.w700),
+            // Bottom Info
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      shop.description != null && shop.description!.isNotEmpty
+                          ? shop.description!
+                          : "Exclusive boutique • Verified seller",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: cs.onSurface.withValues(alpha: 0.55),
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Free delivery",
-                        style: TextStyle(color: cs.onSurface.withOpacity(0.4), fontSize: 10, fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_outlined, size: 13, color: cs.onSurface.withValues(alpha: 0.4)),
+                            const SizedBox(width: 3),
+                            Text(
+                              shop.city != null && shop.city!.isNotEmpty ? shop.city! : "Nearby Store",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cs.onSurface.withValues(alpha: 0.5),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "Visit",
+                              style: TextStyle(
+                                color: cs.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(width: 2),
+                            Icon(Icons.arrow_forward_rounded, color: cs.primary, size: 12),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

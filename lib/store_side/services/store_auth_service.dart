@@ -9,11 +9,7 @@ class StoreAuthService {
   Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-  };
-
-  Map<String, String> get _authHeaders => {
-    ..._headers,
-    'Authorization': 'Bearer ${StoreApiService.token ?? ''}',
+    'ngrok-skip-browser-warning': 'true',
   };
 
   Future<Map<String, dynamic>> login({
