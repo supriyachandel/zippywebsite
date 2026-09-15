@@ -17,7 +17,8 @@ export function resolveImageUrl(path) {
   if (clean.startsWith('storage/')) {
     clean = clean.substring(8)
   }
-  return `/storage/${clean}`
+  // Use full backend domain so images work on Vercel and external hosts
+  return `${NGROK_DOMAIN}/storage/${clean}`
 }
 
 export function getLoggedInToken() {

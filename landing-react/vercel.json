@@ -1,0 +1,27 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://fascism-bullseye-perjury.ngrok-free.dev/api/:path*"
+    },
+    {
+      "source": "/storage/:path*",
+      "destination": "https://fascism-bullseye-perjury.ngrok-free.dev/storage/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "ngrok-skip-browser-warning",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
