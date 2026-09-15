@@ -102,7 +102,7 @@ export async function registerUser({ name, email, password, phone, gender, addre
       password,
       password_confirmation: password,
       phone: phone || ('9' + Math.floor(100000000 + Math.random() * 900000000)),
-      gender: gender || 'unisex',
+      gender: (gender === 'unisex' || !gender) ? 'female' : gender,
       address: address || 'MG Road, Indiranagar',
       city: city || 'Bengaluru',
       state: 'Karnataka',

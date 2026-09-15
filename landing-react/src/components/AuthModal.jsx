@@ -7,6 +7,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, pendingItemName 
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [gender, setGender] = useState('female')
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -53,7 +54,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, pendingItemName 
         email,
         password,
         phone: regPhone,
-        gender: 'unisex',
+        gender: gender || 'female',
         address: 'MG Road, Indiranagar',
         city: 'Bengaluru'
       })
@@ -66,34 +67,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, pendingItemName 
       }
     } catch (err) {
       setErrorMsg(err.message || 'Registration failed. Try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Quick guest login helper for instant testing
-  const handleQuickGuest = async () => {
-    setLoading(true)
-    setErrorMsg('')
-    try {
-      const guestEmail = `customer_${Date.now()}@zippystyle.com`
-      const guestPhone = '9' + Math.floor(100000000 + Math.random() * 900000000)
-      const res = await registerUser({
-        name: 'Tanya (App User)',
-        email: guestEmail,
-        password: 'Password123',
-        phone: guestPhone,
-        gender: 'female',
-        address: 'MG Road, Indiranagar',
-        city: 'Bengaluru'
-      })
-
-      if (res && res.token) {
-        onSuccess(res.user, res.token)
-        onClose()
-      }
-    } catch (err) {
-      setErrorMsg('Quick login error: ' + err.message)
     } finally {
       setLoading(false)
     }
@@ -197,6 +170,33 @@ export default function AuthModal({ isOpen, onClose, onSuccess, pendingItemName 
             </div>
 
             <div className="form-group">
+              <label>Gender</label>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                {['female', 'male', 'other'].map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    style={{
+                      flex: 1,
+                      padding: '8px',
+                      borderRadius: '8px',
+                      border: gender === g ? '2px solid #ef4444' : '1px solid #cbd5e1',
+                      background: gender === g ? '#fef2f2' : '#ffffff',
+                      color: gender === g ? '#ef4444' : '#64748b',
+                      fontWeight: '700',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      textTransform: 'capitalize'
+                    }}
+                    onClick={() => setGender(g)}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
               <label>Create Password</label>
               <input
                 type="password"
@@ -213,13 +213,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, pendingItemName 
           </form>
         )}
 
-        <div className="auth-divider">
-          <span>OR</span>
-        </div>
-
-        <button className="quick-guest-btn" onClick={handleQuickGuest} disabled={loading}>
-          ⚡ 1-Click Instant Guest Sign In
-        </button>
       </div>
     </div>
   )

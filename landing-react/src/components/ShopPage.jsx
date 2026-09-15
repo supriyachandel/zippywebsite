@@ -169,6 +169,26 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
 
   const selectedShopObj = shops.find(s => s.id === selectedShopId)
 
+  const selectedSubCatObj = useMemo(() => {
+    return subCategories.find(s => s.id === Number(selectedSubCatId) || s.name?.toLowerCase() === String(selectedSubCatId).toLowerCase())
+  }, [subCategories, selectedSubCatId])
+
+  const selectedSubCatName = selectedSubCatObj ? selectedSubCatObj.name : selectedSubCatId
+
+  const hasActiveFilter = Boolean(
+    searchQuery.trim() || 
+    selectedSubCatId !== 'all' || 
+    selectedShopId !== null || 
+    selectedGender !== 'all'
+  )
+
+  const handleClearAllFilters = () => {
+    setSearchQuery('')
+    setSelectedSubCatId('all')
+    setSelectedShopId(null)
+    setSelectedGender('all')
+  }
+
   return (
     <div className="pro-shop-container">
       {/* ─── Secondary Store Control Bar ─── */}
@@ -203,7 +223,7 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
 
             <div className="search-pills-row">
               <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>Quick Search:</span>
-              {['Kurta', 'T-Shirt', 'Jeans', 'Sopu', 'Under ₹1000'].map((tag) => (
+              {['Kurta', 'T-Shirt', 'Jeans', 'Shoes', 'Under ₹1000'].map((tag) => (
                 <button
                   key={tag}
                   className="search-pill-tag"
@@ -217,124 +237,184 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
         </div>
       </div>
 
-      {/* ─── Hero Showcase Carousel ─── */}
-      <section className="pro-hero-section">
-        <div 
-          className="pro-hero-slide"
-          style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.65) 60%, transparent 100%), url(${BANNERS[activeBanner].image})` }}
-        >
-          <div className="pro-hero-content">
-            <span className="pro-hero-tag">{BANNERS[activeBanner].tag}</span>
-            <h1>{BANNERS[activeBanner].title}</h1>
-            <p>{BANNERS[activeBanner].subtitle}</p>
+      {hasActiveFilter ? (
+        /* ─── DEDICATED SEARCH & FILTER RESULTS VIEW PAGE ─── */
+        <div className="pro-results-header">
+          <div className="pro-results-header-inner">
+            <div className="results-top-nav">
+              <button className="btn-back-home" onClick={handleClearAllFilters}>
+                ← Back to Shop Home
+              </button>
+            </div>
 
-            <div className="pro-hero-actions">
-              <a href="#products-grid" className="btn-hero-primary">Browse Live Products ({products.length})</a>
-              <a href="#stores-section" className="btn-hero-secondary">Explore Stores Nearby</a>
+            <div className="results-title-group">
+              <h2>
+                {searchQuery.trim() ? (
+                  <>Search results for <span>"{searchQuery}"</span></>
+                ) : selectedShopObj ? (
+                  <>Products from <span>{selectedShopObj.name}</span></>
+                ) : selectedSubCatId !== 'all' ? (
+                  <>Category: <span>{selectedSubCatName}</span></>
+                ) : (
+                  <>Filtered <span>Products</span></>
+                )}
+              </h2>
+              <p className="results-subtitle">
+                Found {filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'items'} matching your query
+              </p>
+            </div>
+
+            {/* Active Filter Chips Bar */}
+            <div className="active-filter-chips">
+              <span className="active-label">Active Filters:</span>
+              {searchQuery.trim() && (
+                <span className="filter-chip">
+                  Search: "{searchQuery}" <button onClick={() => setSearchQuery('')}>&times;</button>
+                </span>
+              )}
+              {selectedSubCatId !== 'all' && (
+                <span className="filter-chip">
+                  Category: {selectedSubCatName} <button onClick={() => setSelectedSubCatId('all')}>&times;</button>
+                </span>
+              )}
+              {selectedShopObj && (
+                <span className="filter-chip">
+                  Store: {selectedShopObj.name} <button onClick={() => setSelectedShopId(null)}>&times;</button>
+                </span>
+              )}
+              {selectedGender !== 'all' && (
+                <span className="filter-chip">
+                  Gender: {selectedGender.charAt(0).toUpperCase() + selectedGender.slice(1)} <button onClick={() => setSelectedGender('all')}>&times;</button>
+                </span>
+              )}
+              <button className="clear-all-chip-btn" onClick={handleClearAllFilters}>
+                Reset All
+              </button>
             </div>
           </div>
-
-          <div className="pro-hero-indicators">
-            {BANNERS.map((_, idx) => (
-              <button
-                key={idx}
-                className={`indicator ${activeBanner === idx ? 'active' : ''}`}
-                onClick={() => setActiveBanner(idx)}
-              />
-            ))}
-          </div>
         </div>
-      </section>
+      ) : (
+        <>
+          {/* ─── Hero Showcase Carousel ─── */}
+          <section className="pro-hero-section">
+            <div 
+              className="pro-hero-slide"
+              style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.65) 60%, transparent 100%), url(${BANNERS[activeBanner].image})` }}
+            >
+              <div className="pro-hero-content">
+                <span className="pro-hero-tag">{BANNERS[activeBanner].tag}</span>
+                <h1>{BANNERS[activeBanner].title}</h1>
+                <p>{BANNERS[activeBanner].subtitle}</p>
 
-      {/* ─── Category Filter Pills Carousel ─── */}
-      <section className="pro-section category-section">
-        <div className="pro-section-title">
-          <div>
-            <h2>Categories</h2>
-            <p>Real categories from live store database</p>
-          </div>
-        </div>
-
-        <div className="pro-cat-carousel">
-          <button
-            className={`pro-cat-pill ${selectedSubCatId === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedSubCatId('all')}
-          >
-            <span className="icon">✨</span>
-            <span className="label">All Items</span>
-            <span className="count">({products.length})</span>
-          </button>
-
-          {subCategories.map((sc) => {
-            const count = products.filter(p => p.subCategoryId === sc.id || p.subCategoryName === sc.name).length
-            return (
-              <button
-                key={sc.id}
-                className={`pro-cat-pill ${selectedSubCatId === sc.id ? 'active' : ''}`}
-                onClick={() => setSelectedSubCatId(sc.id)}
-              >
-                <span className="icon">
-                  {sc.name.toLowerCase().includes('jean') ? '👖' : 
-                   sc.name.toLowerCase().includes('shirt') ? '👕' : 
-                   sc.name.toLowerCase().includes('sand') ? '👡' : '👗'}
-                </span>
-                <span className="label">{sc.name}</span>
-                {count > 0 && <span className="count">({count})</span>}
-              </button>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* ─── Stores Nearby Section (Real Shops) ─── */}
-      <section id="stores-section" className="pro-section stores-section">
-        <div className="pro-section-title">
-          <div>
-            <h2>Stores Nearby</h2>
-            <p>Certified boutiques with 15-minute trial dispatch</p>
-          </div>
-          {selectedShopId && (
-            <button className="reset-filter-btn" onClick={() => setSelectedShopId(null)}>
-              ✕ Show All Stores
-            </button>
-          )}
-        </div>
-
-        <div className="pro-stores-grid">
-          {shops.map((shop) => {
-            const isSelected = selectedShopId === shop.id
-            const shopProductCount = products.filter(p => p.shopId === shop.id).length
-            return (
-              <div
-                key={shop.id}
-                className={`pro-store-card ${isSelected ? 'selected' : ''}`}
-                onClick={() => setSelectedShopId(isSelected ? null : shop.id)}
-              >
-                <div className="store-banner">
-                  {shop.image ? (
-                    <img 
-                      src={shop.image} 
-                      alt={shop.name}
-                      onError={(e) => { e.currentTarget.style.display = 'none' }}
-                    />
-                  ) : null}
-                  <div className="store-fallback-icon">🏬</div>
-                  <span className="store-rating-badge">★ {shop.rating}</span>
-                </div>
-
-                <div className="store-body">
-                  <h4>{shop.name}</h4>
-                  <p className="store-address">📍 {shop.city || 'Bengaluru'} {shop.address ? `• ${shop.address}` : ''}</p>
-                  <div className="store-footer-meta">
-                    <span className="delivery-tag">⚡ {shop.deliveryTime}</span>
-                    <span className="items-count">{shopProductCount} items</span>
-                  </div>
+                <div className="pro-hero-actions">
+                  <a href="#products-grid" className="btn-hero-primary">Browse Live Products ({products.length})</a>
+                  <a href="#stores-section" className="btn-hero-secondary">Explore Stores Nearby</a>
                 </div>
               </div>
-            )
-          })}
-        </div>
-      </section>
+
+              <div className="pro-hero-indicators">
+                {BANNERS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`indicator ${activeBanner === idx ? 'active' : ''}`}
+                    onClick={() => setActiveBanner(idx)}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ─── Category Filter Pills Carousel ─── */}
+          <section className="pro-section category-section">
+            <div className="pro-section-title">
+              <div>
+                <h2>Categories</h2>
+                <p>Real categories from live store database</p>
+              </div>
+            </div>
+
+            <div className="pro-cat-carousel">
+              <button
+                className={`pro-cat-pill ${selectedSubCatId === 'all' ? 'active' : ''}`}
+                onClick={() => setSelectedSubCatId('all')}
+              >
+                <span className="icon">✨</span>
+                <span className="label">All Items</span>
+                <span className="count">({products.length})</span>
+              </button>
+
+              {subCategories.map((sc) => {
+                const count = products.filter(p => p.subCategoryId === sc.id || p.subCategoryName === sc.name).length
+                return (
+                  <button
+                    key={sc.id}
+                    className={`pro-cat-pill ${selectedSubCatId === sc.id ? 'active' : ''}`}
+                    onClick={() => setSelectedSubCatId(sc.id)}
+                  >
+                    <span className="icon">
+                      {sc.name.toLowerCase().includes('jean') ? '👖' : 
+                       sc.name.toLowerCase().includes('shirt') ? '👕' : 
+                       sc.name.toLowerCase().includes('sand') ? '👡' : '👗'}
+                    </span>
+                    <span className="label">{sc.name}</span>
+                    {count > 0 && <span className="count">({count})</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+
+          {/* ─── Stores Nearby Section (Real Shops) ─── */}
+          <section id="stores-section" className="pro-section stores-section">
+            <div className="pro-section-title">
+              <div>
+                <h2>Stores Nearby</h2>
+                <p>Certified boutiques with 15-minute trial dispatch</p>
+              </div>
+              {selectedShopId && (
+                <button className="reset-filter-btn" onClick={() => setSelectedShopId(null)}>
+                  ✕ Show All Stores
+                </button>
+              )}
+            </div>
+
+            <div className="pro-stores-grid">
+              {shops.map((shop) => {
+                const isSelected = selectedShopId === shop.id
+                const shopProductCount = products.filter(p => p.shopId === shop.id).length
+                return (
+                  <div
+                    key={shop.id}
+                    className={`pro-store-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => setSelectedShopId(isSelected ? null : shop.id)}
+                  >
+                    <div className="store-banner">
+                      {shop.image ? (
+                        <img 
+                          src={shop.image} 
+                          alt={shop.name}
+                          onError={(e) => { e.currentTarget.style.display = 'none' }}
+                        />
+                      ) : null}
+                      <div className="store-fallback-icon">🏬</div>
+                      <span className="store-rating-badge">★ {shop.rating}</span>
+                    </div>
+
+                    <div className="store-body">
+                      <h4>{shop.name}</h4>
+                      <p className="store-address">📍 {shop.city || 'Bengaluru'} {shop.address ? `• ${shop.address}` : ''}</p>
+                      <div className="store-footer-meta">
+                        <span className="delivery-tag">⚡ {shop.deliveryTime}</span>
+                        <span className="items-count">{shopProductCount} items</span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        </>
+      )}
 
       {/* ─── Products Catalog Grid (Real Products Only) ─── */}
       <section id="products-grid" className="pro-section products-section">

@@ -53,8 +53,8 @@ export default function Nav({ activeTab = 'home', setActiveTab, cartCount = 0, o
             SHOP <span className="nav-badge-pill">NEW</span>
           </a>
           <a href="#about" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('about')?.scrollIntoView(), 100); }}>ABOUT US</a>
-          <a href="#store" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('store')?.scrollIntoView(), 100); }}>FOR STORES</a>
-          <a href="#contact" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('contact')?.scrollIntoView(), 100); }}>CONTACT</a>
+          <a href="#store" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('store')?.scrollIntoView({ behavior: 'smooth' }), 100); }}>FOR STORES</a>
+          <a href="#contact" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); }}>CONTACT</a>
         </div>
 
         <div className="nav-actions">
@@ -104,9 +104,9 @@ export default function Nav({ activeTab = 'home', setActiveTab, cartCount = 0, o
             MY ORDERS & PROFILE 👤
           </a>
         )}
-        <a href="#about" onClick={closeMenu}>ABOUT US</a>
-        <a href="#store" onClick={closeMenu}>FOR STORES</a>
-        <a href="#contact" onClick={closeMenu}>CONTACT</a>
+        <a href="#about" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); closeMenu(); }}>ABOUT US</a>
+        <a href="#store" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('store')?.scrollIntoView({ behavior: 'smooth' }), 100); closeMenu(); }}>FOR STORES</a>
+        <a href="#contact" onClick={(e) => { handleNavClick('home', e); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); closeMenu(); }}>CONTACT</a>
       </div>
     </header>
   )

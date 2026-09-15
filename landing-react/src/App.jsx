@@ -10,6 +10,7 @@ import Testimonials from './components/Testimonials'
 import Stats from './components/Stats'
 import FAQ from './components/FAQ'
 import CTA from './components/CTA'
+import ContactSection from './components/ContactSection'
 import Footer from './components/Footer'
 import LottieShowcase from './components/LottieShowcase'
 import Screenshots from './components/Screenshots'
@@ -152,10 +153,11 @@ export default function App() {
           <Stats />
           <FAQ />
           <CTA />
+          <ContactSection currentUser={currentUser} />
         </>
       )}
 
-      <Footer />
+      <Footer onNavigate={handleTabSwitch} />
     </>
   )
 }
