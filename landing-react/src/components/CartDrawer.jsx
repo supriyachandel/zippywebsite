@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createPurchaseOrder } from '../services/apiService'
+import SafeImage from './SafeImage'
 
 export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem, onClearCart }) {
   const [checkoutStep, setCheckoutStep] = useState(false)
@@ -159,11 +160,12 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
             <div className="cart-items-list">
               {cartItems.map((item) => (
                 <div key={item.cartId} className="cart-item">
-                  {item.image ? (
-                    <img src={item.image} alt={item.name} className="cart-item-img" />
-                  ) : (
-                    <div className="cart-item-fallback-img">👕</div>
-                  )}
+                  <SafeImage 
+                    src={item.image} 
+                    fallback="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&auto=format&fit=crop&q=80"
+                    alt={item.name} 
+                    className="cart-item-img" 
+                  />
                   <div className="cart-item-info">
                     <div className="cart-item-header">
                       <h5 className="cart-item-title">{item.name}</h5>

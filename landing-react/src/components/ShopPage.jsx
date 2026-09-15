@@ -3,6 +3,7 @@ import { fetchProducts, fetchCategories, fetchShops, getLoggedInUser, logoutUser
 import ProductDetailModal from './ProductDetailModal'
 import AuthModal from './AuthModal'
 import LocationModal from './LocationModal'
+import SafeImage from './SafeImage'
 
 const BANNERS = [
   {
@@ -389,12 +390,10 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
                     onClick={() => setSelectedShopId(isSelected ? null : shop.id)}
                   >
                     <div className="store-banner">
-                      <img 
-                        src={shop.image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80'} 
+                      <SafeImage 
+                        src={shop.image} 
+                        fallback="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80"
                         alt={shop.name}
-                        onError={(e) => { 
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80'
-                        }}
                       />
                       <div className="store-fallback-icon">🏬</div>
                       <span className="store-rating-badge">★ {shop.rating}</span>
@@ -491,13 +490,11 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
                 >
                   {/* Image & Badges */}
                   <div className="pro-img-wrapper">
-                    <img 
-                      src={product.image || getFallbackProductImage(product.name, product.subCategoryName)} 
+                    <SafeImage 
+                      src={product.image} 
+                      fallback={getFallbackProductImage(product.name, product.subCategoryName)}
                       alt={product.name} 
                       loading="lazy"
-                      onError={(e) => { 
-                        e.currentTarget.src = getFallbackProductImage(product.name, product.subCategoryName)
-                      }}
                     />
 
                     <div className="top-tags">
