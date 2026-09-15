@@ -124,6 +124,29 @@ export async function registerUser({ name, email, password, phone, gender, addre
   return { token, user }
 }
 
+export function getFallbackProductImage(name = '', subCategory = '') {
+  const query = `${name} ${subCategory}`.toLowerCase()
+  if (query.includes('mug') || query.includes('coffee')) {
+    return 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80'
+  }
+  if (query.includes('kurta') || query.includes('ethnic')) {
+    return 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&auto=format&fit=crop&q=80'
+  }
+  if (query.includes('jean') || query.includes('denim')) {
+    return 'https://images.unsplash.com/photo-1542272604-780c96856592?w=800&auto=format&fit=crop&q=80'
+  }
+  if (query.includes('sandle') || query.includes('sandal') || query.includes('shoe') || query.includes('footwear')) {
+    return 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&auto=format&fit=crop&q=80'
+  }
+  if (query.includes('shirt') || query.includes('tshirt') || query.includes('t-shirt')) {
+    return 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80'
+  }
+  if (query.includes('dress') || query.includes('women')) {
+    return 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&auto=format&fit=crop&q=80'
+  }
+  return 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&auto=format&fit=crop&q=80'
+}
+
 // ─── Real Products ───
 export async function fetchProducts() {
   const data = await request('/products')
@@ -132,7 +155,16 @@ export async function fetchProducts() {
   return rawList.map((p) => {
     const priceNum = parseFloat(p.price) || 0
     const discountNum = parseFloat(p.discount_price) || priceNum
-    const resolvedImg = resolveImageUrl(p.image_url || p.image)
+    const subCatName = p.sub_category?.name || 'Fashion'
+    
+    // Resolve product image, or subcategory image, or contextual fallback
+    let resolvedImg = resolveImageUrl(p.image_url || p.image)
+    if (!resolvedImg && p.sub_category?.image) {
+      resolvedImg = resolveImageUrl(p.sub_category.image)
+    }
+    if (!resolvedImg) {
+      resolvedImg = getFallbackProductImage(p.name, subCatName)
+    }
 
     let sizesArray = []
     if (p.size) {
@@ -164,7 +196,7 @@ export async function fetchProducts() {
       imageUrls: (p.image_urls && p.image_urls.length > 0) ? p.image_urls.map(resolveImageUrl) : (resolvedImg ? [resolvedImg] : []),
       status: p.status || 'active',
       subCategoryId: p.sub_category_id || p.sub_category?.id,
-      subCategoryName: p.sub_category?.name || 'Fashion',
+      subCategoryName: subCatName,
       shopId: p.shop_id || p.shop?.id,
       shopName: p.shop?.name || 'Local Store',
       shopAddress: p.shop?.address ? `${p.shop.address}, ${p.shop.city || ''}` : null,
@@ -188,7 +220,7 @@ export async function fetchCategories() {
     name: c.category_name || c.name,
     slug: c.slug,
     description: c.description,
-    image: resolveImageUrl(c.image)
+    image: resolveImageUrl(c.image) || getFallbackProductImage(c.category_name || c.name, 'Category')
   }))
 
   const subCategories = (subData.sub_categories || []).map(s => ({
@@ -196,7 +228,7 @@ export async function fetchCategories() {
     name: s.name,
     slug: s.slug,
     categoryId: s.category_id,
-    image: resolveImageUrl(s.image)
+    image: resolveImageUrl(s.image) || getFallbackProductImage(s.name, 'Category')
   }))
 
   return { categories, subCategories }
@@ -210,7 +242,7 @@ export async function fetchShops() {
     name: s.name || 'Store',
     slug: s.slug,
     description: s.description,
-    image: resolveImageUrl(s.image_url || s.image),
+    image: resolveImageUrl(s.image_url || s.image) || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80',
     shopNumber: s.shop_number,
     address: s.address,
     city: s.city,

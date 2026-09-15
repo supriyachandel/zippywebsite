@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getFallbackProductImage } from '../services/apiService'
 
 export default function ProductDetailModal({ product, onClose, onAddToCart }) {
   if (!product) return null
@@ -7,6 +8,8 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || product.color || 'Default')
   const [purchaseMode, setPurchaseMode] = useState(product.tryAtHome ? 'try' : 'buy')
   const [addedNotice, setAddedNotice] = useState(false)
+
+  const defaultImg = product.image || getFallbackProductImage(product.name, product.subCategoryName)
 
   const hasDiscount = product.discountPrice > 0 && product.discountPrice < product.price
   const discountPercent = hasDiscount
@@ -37,14 +40,13 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
           {/* Left: Image Gallery */}
           <div className="product-modal-media">
             <div className="product-modal-main-img">
-              {product.image ? (
-                <img src={product.image} alt={product.name} />
-              ) : (
-                <div className="modal-fallback-img">
-                  <span className="icon">👕</span>
-                  <span>{product.subCategoryName || 'Store Product'}</span>
-                </div>
-              )}
+              <img 
+                src={defaultImg} 
+                alt={product.name} 
+                onError={(e) => {
+                  e.currentTarget.src = getFallbackProductImage(product.name, product.subCategoryName)
+                }}
+              />
               {hasDiscount && <span className="product-modal-badge">{discountPercent}% OFF</span>}
               <div className="try-home-banner">
                 <span className="icon">🏠</span>

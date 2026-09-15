@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { fetchProducts, fetchCategories, fetchShops, getLoggedInUser, logoutUser } from '../services/apiService'
+import { fetchProducts, fetchCategories, fetchShops, getLoggedInUser, logoutUser, getFallbackProductImage } from '../services/apiService'
 import ProductDetailModal from './ProductDetailModal'
 import AuthModal from './AuthModal'
 import LocationModal from './LocationModal'
@@ -389,13 +389,13 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
                     onClick={() => setSelectedShopId(isSelected ? null : shop.id)}
                   >
                     <div className="store-banner">
-                      {shop.image ? (
-                        <img 
-                          src={shop.image} 
-                          alt={shop.name}
-                          onError={(e) => { e.currentTarget.style.display = 'none' }}
-                        />
-                      ) : null}
+                      <img 
+                        src={shop.image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80'} 
+                        alt={shop.name}
+                        onError={(e) => { 
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80'
+                        }}
+                      />
                       <div className="store-fallback-icon">🏬</div>
                       <span className="store-rating-badge">★ {shop.rating}</span>
                     </div>
@@ -491,19 +491,14 @@ export default function ShopPage({ onAddToCart, onOpenCart, cartCount = 0, curre
                 >
                   {/* Image & Badges */}
                   <div className="pro-img-wrapper">
-                    {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        loading="lazy"
-                        onError={(e) => { e.currentTarget.style.opacity = '0' }}
-                      />
-                    ) : null}
-                    
-                    <div className="image-fallback">
-                      <span className="icon">👕</span>
-                      <span className="text">{product.subCategoryName || 'Store Item'}</span>
-                    </div>
+                    <img 
+                      src={product.image || getFallbackProductImage(product.name, product.subCategoryName)} 
+                      alt={product.name} 
+                      loading="lazy"
+                      onError={(e) => { 
+                        e.currentTarget.src = getFallbackProductImage(product.name, product.subCategoryName)
+                      }}
+                    />
 
                     <div className="top-tags">
                       <span className="store-tag">🏬 {product.shopName}</span>
